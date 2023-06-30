@@ -75,6 +75,7 @@ type alias Model =
     , size : Int
     , gameState : GameState
     , canvasClass : String
+    , addShapeButton : AddShapeButtonState
     }
 
 
@@ -90,6 +91,12 @@ type Msg
     | CloseModal
     | GenerateRandom
     | NewRandom Int
+    | ChangeDropDown
+
+
+type AddShapeButtonState
+    = ShowButtonMenu
+    | HideButtonMenu
 
 
 init : Float -> ( Model, Cmd Msg )
@@ -104,6 +111,7 @@ init _ =
       , size = 7
       , gameState = NotPlaying
       , canvasClass = ""
+      ,addShapeButton = HideButtonMenu
       }
     , Random.generate NewRandom (Random.int 0 2)
     )
@@ -194,6 +202,18 @@ update msg model =
 
             else
                 ( { model | randomIndexes = newRand :: model.randomIndexes }, Cmd.none )
+
+        ChangeDropDown ->
+           ( { model
+                | addShapeButton =
+                    case model.addShapeButton of
+                        HideButtonMenu ->
+                            ShowButtonMenu
+
+                        ShowButtonMenu ->
+                            HideButtonMenu
+            },Cmd.none)
+
 
 
 buildMaze : Model -> ( Int, Int ) -> List Renderable
@@ -330,14 +350,48 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewHeader
+        , viewDropdown model
         , div [ style "margin" "auto", style "width" (String.fromInt width) ]
             [ viewCanvas model
             , viewModal model
             , viewButtons
             ]
         ]
---dwfwaafw
---hwfauawf
+viewDropdown: Model -> Html Msg
+viewDropdown model =
+    div[class "container"][case model.addShapeButton of
+                    HideButtonMenu ->
+                        div
+                            [ class "dropdown" ]
+                            [ div [ class "dropdown-trigger", onClick ChangeDropDown ]
+                                [ button [ class "button is-success" ]
+                                    [ span [] [ Html.text "Neue Form" ]
+                                    , span [ class "icon is-small" ] [ i [ class "fas fa-angle-down" ] [] ]
+                                    ]
+                                ]
+                            ]
+
+                    ShowButtonMenu ->
+                        div
+                            [ class "dropdown is-active" ]
+                            [ div [ class "dropdown-trigger", onClick ChangeDropDown ]
+                                [ button [ class "button is-success" ]
+                                    [ span [] [ Html.text "Neue Form" ]
+                                    , span [ class "icon is-small" ] [ i [ class "fas fa-angle-down" ] [] ]
+                                    ]
+                                ]
+                            , div [ class "dropdown-menu" ]
+                                [ div [ class "dropdown-content" ]
+                                    [ a
+                                        [ class "dropdown-item"
+                                        , onClick (ChangeDropDown)
+                                        ]
+                                        [ Html.text "Kreis" ]
+                                    ]
+                                ]
+                            ]
+    ]
+
 
 viewButtons : Html Msg
 viewButtons =
