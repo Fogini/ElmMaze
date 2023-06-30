@@ -383,10 +383,38 @@ viewDropdown model =
                             , div [ class "dropdown-menu" ]
                                 [ div [ class "dropdown-content" ]
                                     [ a
-                                        [ class "dropdown-item"
+                                        [ class "dropdown-item", class "button is-black"
                                         , onClick (ChangeDropDown)
                                         ]
-                                        [ Html.text "Kreis" ]
+                                        [ Html.text "Schwarz" ],
+                                        a
+                                        [ class "dropdown-item",class "button is-blue"
+                                        , onClick (ChangeDropDown)
+                                        ]
+                                        [ Html.text "Blau" ],
+                                        a
+                                        [ class "dropdown-item",class "button is-red"
+                                        , onClick (ChangeDropDown)
+                                        ]
+                                        [ Html.text "Rot" ]
+                                        ,
+                                        a
+                                        [ class "dropdown-item",class "button is-green"
+                                        , onClick (ChangeDropDown)
+                                        ]
+                                        [ Html.text "Grün" ]
+                                        ,
+                                        a
+                                        [ class "dropdown-item",class "button is-orange"
+                                        , onClick (ChangeDropDown)
+                                        ]
+                                        [ Html.text "Orange" ]
+                                        ,
+                                        a
+                                        [ class "dropdown-item",class "button is-purple"
+                                        , onClick (ChangeDropDown)
+                                        ]
+                                        [ Html.text "Lila" ]
                                     ]
                                 ]
                             ]

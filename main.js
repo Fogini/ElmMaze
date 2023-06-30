@@ -5243,6 +5243,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$element = _Browser_element;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $author$project$Main$HideButtonMenu = {$: 'HideButtonMenu'};
 var $author$project$Main$NewRandom = function (a) {
 	return {$: 'NewRandom', a: a};
 };
@@ -5575,6 +5576,7 @@ var $author$project$Main$width = (($author$project$Main$size * 2) * $author$proj
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
+			addShapeButton: $author$project$Main$HideButtonMenu,
 			canvasClass: '',
 			color: $avh4$elm_color$Color$black,
 			drawingPointer: $elm$core$Maybe$Nothing,
@@ -5753,6 +5755,7 @@ var $author$project$Main$AddVertex = function (a) {
 var $author$project$Main$GenerateRandom = {$: 'GenerateRandom'};
 var $author$project$Main$Lost = {$: 'Lost'};
 var $author$project$Main$Playing = {$: 'Playing'};
+var $author$project$Main$ShowButtonMenu = {$: 'ShowButtonMenu'};
 var $elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -6378,11 +6381,11 @@ var $author$project$MyMatrix$set = F3(
 		}
 	});
 var $author$project$Main$connectVertices = F3(
-	function (model, _v6, _v7) {
-		var x1 = _v6.a;
-		var y1 = _v6.b;
-		var x2 = _v7.a;
-		var y2 = _v7.b;
+	function (model, _v7, _v8) {
+		var x1 = _v7.a;
+		var y1 = _v7.b;
+		var x2 = _v8.a;
+		var y2 = _v8.b;
 		return _Utils_eq(
 			A2(
 				$author$project$MyMatrix$get,
@@ -6517,7 +6520,7 @@ var $author$project$Main$update = F2(
 						$elm$random$Random$generate,
 						$author$project$Main$NewRandom,
 						A2($elm$random$Random$int, 0, 3)));
-			default:
+			case 'NewRandom':
 				var newRand = msg.a;
 				return (_Utils_cmp(
 					$elm$core$List$length(model.randomIndexes),
@@ -6532,6 +6535,21 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							randomIndexes: A2($elm$core$List$cons, newRand, model.randomIndexes)
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							addShapeButton: function () {
+								var _v6 = model.addShapeButton;
+								if (_v6.$ === 'HideButtonMenu') {
+									return $author$project$Main$ShowButtonMenu;
+								} else {
+									return $author$project$Main$HideButtonMenu;
+								}
+							}()
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -7618,6 +7636,219 @@ var $author$project$Main$viewCanvas = function (model) {
 				_List_Nil)
 			]));
 };
+var $author$project$Main$ChangeDropDown = {$: 'ChangeDropDown'};
+var $elm$html$Html$a = _VirtualDom_node('a');
+var $elm$html$Html$i = _VirtualDom_node('i');
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $author$project$Main$viewDropdown = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('container')
+			]),
+		_List_fromArray(
+			[
+				function () {
+				var _v0 = model.addShapeButton;
+				if (_v0.$ === 'HideButtonMenu') {
+					return A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('dropdown')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('dropdown-trigger'),
+										$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('button is-success')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Neue Form')
+													])),
+												A2(
+												$elm$html$Html$span,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('icon is-small')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$i,
+														_List_fromArray(
+															[
+																$elm$html$Html$Attributes$class('fas fa-angle-down')
+															]),
+														_List_Nil)
+													]))
+											]))
+									]))
+							]));
+				} else {
+					return A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('dropdown is-active')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('dropdown-trigger'),
+										$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('button is-success')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Neue Form')
+													])),
+												A2(
+												$elm$html$Html$span,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('icon is-small')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$i,
+														_List_fromArray(
+															[
+																$elm$html$Html$Attributes$class('fas fa-angle-down')
+															]),
+														_List_Nil)
+													]))
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('dropdown-menu')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('dropdown-content')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$a,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('dropdown-item'),
+														$elm$html$Html$Attributes$class('button is-black'),
+														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Schwarz')
+													])),
+												A2(
+												$elm$html$Html$a,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('dropdown-item'),
+														$elm$html$Html$Attributes$class('button is-blue'),
+														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Blau')
+													])),
+												A2(
+												$elm$html$Html$a,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('dropdown-item'),
+														$elm$html$Html$Attributes$class('button is-red'),
+														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Rot')
+													])),
+												A2(
+												$elm$html$Html$a,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('dropdown-item'),
+														$elm$html$Html$Attributes$class('button is-green'),
+														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Grün')
+													])),
+												A2(
+												$elm$html$Html$a,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('dropdown-item'),
+														$elm$html$Html$Attributes$class('button is-orange'),
+														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Orange')
+													])),
+												A2(
+												$elm$html$Html$a,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('dropdown-item'),
+														$elm$html$Html$Attributes$class('button is-purple'),
+														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Lila')
+													]))
+											]))
+									]))
+							]));
+				}
+			}()
+			]));
+};
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
 var $author$project$Main$viewHeader = A2(
@@ -7697,7 +7928,6 @@ var $author$project$Main$modalHeader = function (title) {
 			]));
 };
 var $elm$html$Html$section = _VirtualDom_node('section');
-var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$table = _VirtualDom_node('table');
 var $elm$html$Html$thead = _VirtualDom_node('thead');
 var $author$project$Main$viewModal = function (model) {
@@ -7791,6 +8021,7 @@ var $author$project$Main$view = function (model) {
 		_List_fromArray(
 			[
 				$author$project$Main$viewHeader,
+				$author$project$Main$viewDropdown(model),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
