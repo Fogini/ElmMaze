@@ -1,0 +1,21 @@
+elm-canvas {
+    display: block;
+    box-shadow: 0 0 200px black;
+  }
+  
+  .mazeButton {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  
+  .header {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  
+  .mazeCover {
+    color: white;
+    display: block;
+    box-shadow: 0 0 200px black;
+  }
+  
