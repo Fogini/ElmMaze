@@ -17,6 +17,11 @@ import List exposing (..)
 import MyMatrix exposing (..)
 import Random
 import Tuple exposing (first, second)
+import String
+import Time
+import Time exposing (utc)
+import Task
+
 
 
 main : Program Float Model Msg
@@ -76,6 +81,8 @@ type alias Model =
     , gameState : GameState
     , canvasClass : String
     , addShapeButton : AddShapeButtonState
+    , unixTimestamp : Int 
+    , duration: Int
     }
 
 
@@ -92,12 +99,15 @@ type Msg
     | GenerateRandom
     | NewRandom Int
     | ChangeDropDown
-
+    | ChangeDrawColor Color
+    | AddNewEntryClick
+    | AddNewEntry Time.Posix
+    | Duration Time.Posix
+    | DurationClick
 
 type AddShapeButtonState
     = ShowButtonMenu
     | HideButtonMenu
-
 
 init : Float -> ( Model, Cmd Msg )
 init _ =
@@ -111,10 +121,13 @@ init _ =
       , size = 7
       , gameState = NotPlaying
       , canvasClass = ""
-      ,addShapeButton = HideButtonMenu
+      , addShapeButton = HideButtonMenu
+      , unixTimestamp =0
+      , duration =0
       }
     , Random.generate NewRandom (Random.int 0 2)
     )
+
 
 
 initMatrix : Int -> Int -> MazeVertexState
@@ -213,7 +226,28 @@ update msg model =
                         ShowButtonMenu ->
                             HideButtonMenu
             },Cmd.none)
+        
+        ChangeDrawColor newcolor-> 
+            ({model|color=newcolor,addShapeButton=HideButtonMenu},Cmd.none)
 
+
+        AddNewEntryClick ->
+            ( model, Task.perform AddNewEntry Time.now )
+        AddNewEntry time ->
+            let
+                millis = Time.posixToMillis time
+            in
+            ({ model | unixTimestamp =  millis }
+            , Cmd.none)
+        
+        DurationClick -> 
+            ( model, Task.perform Duration Time.now )
+        
+        Duration time -> 
+        
+            let 
+                millis= Time.posixToMillis time
+            in ({model|duration=millis - model.unixTimestamp },Cmd.none)
 
 
 buildMaze : Model -> ( Int, Int ) -> List Renderable
@@ -345,12 +379,20 @@ drawLine model line =
             , stroke model.color
             ]
 
+getTime:Int-> Html Msg
+getTime zeit= div[][Html.text (String.fromInt (Time.toHour utc (zeit|> Time.millisToPosix ))
+  ++ ":" ++
+  String.fromInt (Time.toMinute utc (zeit |> Time.millisToPosix ))
+  ++ ":" ++
+  String.fromInt (Time.toSecond utc (zeit |> Time.millisToPosix ))
+  ++ " (UTC)")]
 
 view : Model -> Html Msg
 view model =
     div []
         [ viewHeader
         , viewDropdown model
+        , viewTime model
         , div [ style "margin" "auto", style "width" (String.fromInt width) ]
             [ viewCanvas model
             , viewModal model
@@ -365,7 +407,7 @@ viewDropdown model =
                             [ class "dropdown" ]
                             [ div [ class "dropdown-trigger", onClick ChangeDropDown ]
                                 [ button [ class "button is-success" ]
-                                    [ span [] [ Html.text "Neue Form" ]
+                                    [ span [] [ Html.text "Zeichenfarbe ändern" ]
                                     , span [ class "icon is-small" ] [ i [ class "fas fa-angle-down" ] [] ]
                                     ]
                                 ]
@@ -384,35 +426,35 @@ viewDropdown model =
                                 [ div [ class "dropdown-content" ]
                                     [ a
                                         [ class "dropdown-item", class "button is-black"
-                                        , onClick (ChangeDropDown)
+                                        , onClick (ChangeDrawColor Color.black)
                                         ]
                                         [ Html.text "Schwarz" ],
                                         a
-                                        [ class "dropdown-item",class "button is-blue"
-                                        , onClick (ChangeDropDown)
+                                        [ class "dropdown-item", class "button is-black"
+                                        , onClick (ChangeDrawColor Color.blue)
                                         ]
                                         [ Html.text "Blau" ],
                                         a
-                                        [ class "dropdown-item",class "button is-red"
-                                        , onClick (ChangeDropDown)
+                                        [ class "dropdown-item", class "button is-grey"
+                                        , onClick (ChangeDrawColor Color.red)
                                         ]
                                         [ Html.text "Rot" ]
                                         ,
                                         a
                                         [ class "dropdown-item",class "button is-green"
-                                        , onClick (ChangeDropDown)
+                                        , onClick (ChangeDrawColor Color.green)
                                         ]
                                         [ Html.text "Grün" ]
                                         ,
                                         a
                                         [ class "dropdown-item",class "button is-orange"
-                                        , onClick (ChangeDropDown)
+                                        , onClick (ChangeDrawColor Color.orange)
                                         ]
                                         [ Html.text "Orange" ]
                                         ,
                                         a
                                         [ class "dropdown-item",class "button is-purple"
-                                        , onClick (ChangeDropDown)
+                                        , onClick (ChangeDrawColor Color.purple)
                                         ]
                                         [ Html.text "Lila" ]
                                     ]
@@ -420,6 +462,11 @@ viewDropdown model =
                             ]
     ]
 
+viewTime: Model -> Html Msg
+viewTime model= div[class "container"][button [ class " button is-success", onClick AddNewEntryClick ] [ Html.text "Start" ],
+                      button [ class " button is-success", onClick DurationClick] [ Html.text "Stop" ],
+                         getTime model.unixTimestamp,
+                         Html.text (String.fromInt model.duration++"ms")]
 
 viewButtons : Html Msg
 viewButtons =

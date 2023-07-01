@@ -5580,6 +5580,7 @@ var $author$project$Main$init = function (_v0) {
 			canvasClass: '',
 			color: $avh4$elm_color$Color$black,
 			drawingPointer: $elm$core$Maybe$Nothing,
+			duration: 0,
 			gameState: $author$project$Main$NotPlaying,
 			matrix: A3(
 				$author$project$MyMatrix$initialize,
@@ -5606,7 +5607,8 @@ var $author$project$Main$init = function (_v0) {
 							$author$project$Main$width,
 							$author$project$Main$height)
 						]))
-				])
+				]),
+			unixTimestamp: 0
 		},
 		A2(
 			$elm$random$Random$generate,
@@ -5749,8 +5751,14 @@ var $elm$browser$Browser$Events$onAnimationFrameDelta = $elm$browser$Browser$Ani
 var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$browser$Browser$Events$onAnimationFrameDelta($author$project$Main$AnimationFrame);
 };
+var $author$project$Main$AddNewEntry = function (a) {
+	return {$: 'AddNewEntry', a: a};
+};
 var $author$project$Main$AddVertex = function (a) {
 	return {$: 'AddVertex', a: a};
+};
+var $author$project$Main$Duration = function (a) {
+	return {$: 'Duration', a: a};
 };
 var $author$project$Main$GenerateRandom = {$: 'GenerateRandom'};
 var $author$project$Main$Lost = {$: 'Lost'};
@@ -6537,7 +6545,7 @@ var $author$project$Main$update = F2(
 							randomIndexes: A2($elm$core$List$cons, newRand, model.randomIndexes)
 						}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'ChangeDropDown':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -6551,6 +6559,37 @@ var $author$project$Main$update = F2(
 								}
 							}()
 						}),
+					$elm$core$Platform$Cmd$none);
+			case 'ChangeDrawColor':
+				var newcolor = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{addShapeButton: $author$project$Main$HideButtonMenu, color: newcolor}),
+					$elm$core$Platform$Cmd$none);
+			case 'AddNewEntryClick':
+				return _Utils_Tuple2(
+					model,
+					A2($elm$core$Task$perform, $author$project$Main$AddNewEntry, $elm$time$Time$now));
+			case 'AddNewEntry':
+				var time = msg.a;
+				var millis = $elm$time$Time$posixToMillis(time);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{unixTimestamp: millis}),
+					$elm$core$Platform$Cmd$none);
+			case 'DurationClick':
+				return _Utils_Tuple2(
+					model,
+					A2($elm$core$Task$perform, $author$project$Main$Duration, $elm$time$Time$now));
+			default:
+				var time = msg.a;
+				var millis = $elm$time$Time$posixToMillis(time);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{duration: millis - model.unixTimestamp}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -7636,9 +7675,17 @@ var $author$project$Main$viewCanvas = function (model) {
 				_List_Nil)
 			]));
 };
+var $author$project$Main$ChangeDrawColor = function (a) {
+	return {$: 'ChangeDrawColor', a: a};
+};
 var $author$project$Main$ChangeDropDown = {$: 'ChangeDropDown'};
 var $elm$html$Html$a = _VirtualDom_node('a');
+var $avh4$elm_color$Color$blue = A4($avh4$elm_color$Color$RgbaSpace, 52 / 255, 101 / 255, 164 / 255, 1.0);
+var $avh4$elm_color$Color$green = A4($avh4$elm_color$Color$RgbaSpace, 115 / 255, 210 / 255, 22 / 255, 1.0);
 var $elm$html$Html$i = _VirtualDom_node('i');
+var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
+var $avh4$elm_color$Color$purple = A4($avh4$elm_color$Color$RgbaSpace, 117 / 255, 80 / 255, 123 / 255, 1.0);
+var $avh4$elm_color$Color$red = A4($avh4$elm_color$Color$RgbaSpace, 204 / 255, 0 / 255, 0 / 255, 1.0);
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$Main$viewDropdown = function (model) {
 	return A2(
@@ -7682,7 +7729,7 @@ var $author$project$Main$viewDropdown = function (model) {
 												_List_Nil,
 												_List_fromArray(
 													[
-														$elm$html$Html$text('Neue Form')
+														$elm$html$Html$text('Zeichenfarbe ändern')
 													])),
 												A2(
 												$elm$html$Html$span,
@@ -7776,7 +7823,8 @@ var $author$project$Main$viewDropdown = function (model) {
 													[
 														$elm$html$Html$Attributes$class('dropdown-item'),
 														$elm$html$Html$Attributes$class('button is-black'),
-														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+														$elm$html$Html$Events$onClick(
+														$author$project$Main$ChangeDrawColor($avh4$elm_color$Color$black))
 													]),
 												_List_fromArray(
 													[
@@ -7787,8 +7835,9 @@ var $author$project$Main$viewDropdown = function (model) {
 												_List_fromArray(
 													[
 														$elm$html$Html$Attributes$class('dropdown-item'),
-														$elm$html$Html$Attributes$class('button is-blue'),
-														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+														$elm$html$Html$Attributes$class('button is-black'),
+														$elm$html$Html$Events$onClick(
+														$author$project$Main$ChangeDrawColor($avh4$elm_color$Color$blue))
 													]),
 												_List_fromArray(
 													[
@@ -7799,8 +7848,9 @@ var $author$project$Main$viewDropdown = function (model) {
 												_List_fromArray(
 													[
 														$elm$html$Html$Attributes$class('dropdown-item'),
-														$elm$html$Html$Attributes$class('button is-red'),
-														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+														$elm$html$Html$Attributes$class('button is-grey'),
+														$elm$html$Html$Events$onClick(
+														$author$project$Main$ChangeDrawColor($avh4$elm_color$Color$red))
 													]),
 												_List_fromArray(
 													[
@@ -7812,7 +7862,8 @@ var $author$project$Main$viewDropdown = function (model) {
 													[
 														$elm$html$Html$Attributes$class('dropdown-item'),
 														$elm$html$Html$Attributes$class('button is-green'),
-														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+														$elm$html$Html$Events$onClick(
+														$author$project$Main$ChangeDrawColor($avh4$elm_color$Color$green))
 													]),
 												_List_fromArray(
 													[
@@ -7824,7 +7875,8 @@ var $author$project$Main$viewDropdown = function (model) {
 													[
 														$elm$html$Html$Attributes$class('dropdown-item'),
 														$elm$html$Html$Attributes$class('button is-orange'),
-														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+														$elm$html$Html$Events$onClick(
+														$author$project$Main$ChangeDrawColor($avh4$elm_color$Color$orange))
 													]),
 												_List_fromArray(
 													[
@@ -7836,7 +7888,8 @@ var $author$project$Main$viewDropdown = function (model) {
 													[
 														$elm$html$Html$Attributes$class('dropdown-item'),
 														$elm$html$Html$Attributes$class('button is-purple'),
-														$elm$html$Html$Events$onClick($author$project$Main$ChangeDropDown)
+														$elm$html$Html$Events$onClick(
+														$author$project$Main$ChangeDrawColor($avh4$elm_color$Color$purple))
 													]),
 												_List_fromArray(
 													[
@@ -8014,6 +8067,134 @@ var $author$project$Main$viewModal = function (model) {
 			return A2($elm$html$Html$span, _List_Nil, _List_Nil);
 	}
 };
+var $author$project$Main$AddNewEntryClick = {$: 'AddNewEntryClick'};
+var $author$project$Main$DurationClick = {$: 'DurationClick'};
+var $elm$time$Time$flooredDiv = F2(
+	function (numerator, denominator) {
+		return $elm$core$Basics$floor(numerator / denominator);
+	});
+var $elm$time$Time$toAdjustedMinutesHelp = F3(
+	function (defaultOffset, posixMinutes, eras) {
+		toAdjustedMinutesHelp:
+		while (true) {
+			if (!eras.b) {
+				return posixMinutes + defaultOffset;
+			} else {
+				var era = eras.a;
+				var olderEras = eras.b;
+				if (_Utils_cmp(era.start, posixMinutes) < 0) {
+					return posixMinutes + era.offset;
+				} else {
+					var $temp$defaultOffset = defaultOffset,
+						$temp$posixMinutes = posixMinutes,
+						$temp$eras = olderEras;
+					defaultOffset = $temp$defaultOffset;
+					posixMinutes = $temp$posixMinutes;
+					eras = $temp$eras;
+					continue toAdjustedMinutesHelp;
+				}
+			}
+		}
+	});
+var $elm$time$Time$toAdjustedMinutes = F2(
+	function (_v0, time) {
+		var defaultOffset = _v0.a;
+		var eras = _v0.b;
+		return A3(
+			$elm$time$Time$toAdjustedMinutesHelp,
+			defaultOffset,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				60000),
+			eras);
+	});
+var $elm$time$Time$toHour = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			24,
+			A2(
+				$elm$time$Time$flooredDiv,
+				A2($elm$time$Time$toAdjustedMinutes, zone, time),
+				60));
+	});
+var $elm$time$Time$toMinute = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2($elm$time$Time$toAdjustedMinutes, zone, time));
+	});
+var $elm$time$Time$toSecond = F2(
+	function (_v0, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				1000));
+	});
+var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
+var $author$project$Main$getTime = function (zeit) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$text(
+				$elm$core$String$fromInt(
+					A2(
+						$elm$time$Time$toHour,
+						$elm$time$Time$utc,
+						$elm$time$Time$millisToPosix(zeit))) + (':' + ($elm$core$String$fromInt(
+					A2(
+						$elm$time$Time$toMinute,
+						$elm$time$Time$utc,
+						$elm$time$Time$millisToPosix(zeit))) + (':' + ($elm$core$String$fromInt(
+					A2(
+						$elm$time$Time$toSecond,
+						$elm$time$Time$utc,
+						$elm$time$Time$millisToPosix(zeit))) + ' (UTC)')))))
+			]));
+};
+var $author$project$Main$viewTime = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('container')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class(' button is-success'),
+						$elm$html$Html$Events$onClick($author$project$Main$AddNewEntryClick)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Start')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class(' button is-success'),
+						$elm$html$Html$Events$onClick($author$project$Main$DurationClick)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Stop')
+					])),
+				$author$project$Main$getTime(model.unixTimestamp),
+				$elm$html$Html$text(
+				$elm$core$String$fromInt(model.duration) + 'ms')
+			]));
+};
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -8022,6 +8203,7 @@ var $author$project$Main$view = function (model) {
 			[
 				$author$project$Main$viewHeader,
 				$author$project$Main$viewDropdown(model),
+				$author$project$Main$viewTime(model),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
