@@ -1,9 +1,10 @@
 module MyMatrix exposing
     ( Matrix
     , empty, initialize, repeat
-    , size, get, getXs, getYs, neighbours
+    , size, get, getXs, getYs, firstNeighbours, secondNeighbours
     , set
     , map, indexedMap
+    , toList, toLists
     )
 
 {-| Two-dimensional matrix backed by Array from the Elm core, the fast immutable array
@@ -37,7 +38,9 @@ implementation.
 -}
 
 import Array exposing (Array)
+import List
 import Tuple exposing (first,second)
+import Random exposing (..)
 
 
 {-| Representation of immutable, two dimensional matrix. You can create a matrix of integers
@@ -174,13 +177,32 @@ indexedMap function matrix =
 {-| Return an array of possible neighbour cells for a given cell.
 It is an array of Maybe, compare the get function that is a single Maybe.
 -}
-neighbours : Matrix a -> (Int,Int) -> List ( Int, Int )
-neighbours matrix (x,y) =
+secondNeighbours : Matrix a -> (Int,Int) -> List ( Int, Int )
+secondNeighbours matrix (x,y) =
     List.filter (\(a,b) -> a > 0 && a < first (size matrix) && b > 0 && b < second (size matrix))
     [ ( x - 2, y )            
     , ( x, y - 2 )
     , ( x, y + 2 )            
     , ( x + 2, y )
-    ]   
+    ]
+
+firstNeighbours : Matrix a -> (Int,Int) -> List ( Int, Int )
+firstNeighbours matrix (x,y) =
+    List.filter (\(a,b) -> a > 0 && a < first (size matrix) && b > 0 && b < second (size matrix))
+    [ ( x - 1, y )            
+    , ( x, y - 1 )
+    , ( x, y + 1 )            
+    , ( x + 1, y )
+    ]                        
 
 --List.map (\( xn, yn ) -> get matrix xn yn) neighbourCoords
+
+
+toLists : Matrix a -> List (List a)
+toLists matrix =
+    Array.map Array.toList matrix
+        |> Array.toList
+
+toList : Matrix a -> List a
+toList matrix =
+    List.foldr (++) [] (toLists matrix)

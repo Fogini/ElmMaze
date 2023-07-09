@@ -1,0 +1,20 @@
+{
+    "rows": 21,
+    "columns": 21,
+    "blockSize": 25,
+    "KeyBinds":
+        { "up": "w"
+        , "left": "a"
+        , "right": "d"
+        , "down": "s"
+        , "jump": " "
+        },
+    "Objects":
+        { "Player": "https://cdn-icons-png.flaticon.com/128/10436/10436765.png"
+        , "Open Door": "https://cdn-icons-png.flaticon.com/128/7917/7917260.png"
+        , "Closed Door": "https://cdn-icons-png.flaticon.com/128/32/32533.png"
+        , "Key": "https://cdn-icons-png.flaticon.com/128/501/501884.png"
+        , "Additional Jump": "https://cdn-icons-png.flaticon.com/128/58/58177.png"
+        }
+}
+    

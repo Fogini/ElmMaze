@@ -4,18 +4,90 @@ elm-canvas {
   }
   
   .mazeButton {
-    margin-left: 10%;
-    margin-right: 10%;
+    margin-left: 25%;
+    margin-right: 25%;
+    width: 50%;
+    margin-bottom : 20px;
   }
   
   .header {
-    margin-left: 10%;
-    margin-right: 10%;
+    margin-left: 20%;
+    margin-right: 20%;
+  }
+
+  .wall { 
+    fill: black;
   }
   
+  .player { 
+    fill: red;
+  }
+
   .mazeCover {
-    color: white;
+    padding-top: 4%;
+  }
+
+  .coverImage {
+    margin-left : 20%;
+    margin-right : 20%;
+  }
+
+  .maze {
+    /*background-color: blue;*/
     display: block;
-    box-shadow: 0 0 200px black;
+    box-shadow: 0 0 50px black;
+  }
+
+  .coverButton {
+    width: 40%;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+
+  .navbar-item {
+    font-size: 30px;
+  }
+
+  .navbar-end {
+    margin-right: 5%;
+  }
+
+  .navbar-start {
+    margin-left: 5%;
+  }
+
+  .box {
+    width: 90%;
+    margin: 30 auto;
+    padding: 10%;
+  }
+
+  .slider {
+    width: 50%;
+    height: 15px;
+    border-radius: 5px;  
+    background: #d3d3d3;
+    /*outline: none;*/
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%; 
+    background: hsl(171, 100%, 41%);
+    cursor: pointer;
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: hsl(171, 100%, 41%);
+    cursor: pointer;
   }
   
