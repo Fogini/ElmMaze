@@ -5429,6 +5429,8 @@ var $author$project$Main$NewRandom = function (a) {
 	return {$: 'NewRandom', a: a};
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $author$project$MyMatrix$empty = $elm$core$Array$empty;
 var $elm$random$Random$Generate = function (a) {
 	return {$: 'Generate', a: a};
@@ -5537,8 +5539,8 @@ var $elm$random$Random$generate = F2(
 			$elm$random$Random$Generate(
 				A2($elm$random$Random$map, tagger, generator)));
 	});
-var $author$project$Main$LoadedShapes = function (a) {
-	return {$: 'LoadedShapes', a: a};
+var $author$project$Main$LoadedInstructions = function (a) {
+	return {$: 'LoadedInstructions', a: a};
 };
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
@@ -5560,8 +5562,6 @@ var $elm$http$Http$Sending = function (a) {
 	return {$: 'Sending', a: a};
 };
 var $elm$http$Http$Timeout_ = {$: 'Timeout_'};
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$Maybe$isJust = function (maybe) {
 	if (maybe.$ === 'Just') {
 		return true;
@@ -6327,10 +6327,6 @@ var $elm$http$Http$get = function (r) {
 	return $elm$http$Http$request(
 		{body: $elm$http$Http$emptyBody, expect: r.expect, headers: _List_Nil, method: 'GET', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
 };
-var $author$project$Main$Settings = F5(
-	function (columns, rows, blockSize, keyBinds, objUrl) {
-		return {blockSize: blockSize, columns: columns, keyBinds: keyBinds, objUrl: objUrl, rows: rows};
-	});
 var $elm$core$Dict$fromList = function (assocs) {
 	return A3(
 		$elm$core$List$foldl,
@@ -6351,9 +6347,27 @@ var $elm$json$Json$Decode$dict = function (decoder) {
 		$elm$json$Json$Decode$keyValuePairs(decoder));
 };
 var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Main$instructionRespondDecoder = A2(
+	$elm$json$Json$Decode$field,
+	'Instructions',
+	$elm$json$Json$Decode$dict($elm$json$Json$Decode$string));
+var $author$project$Main$getInstructions = function (url) {
+	return $elm$http$Http$get(
+		{
+			expect: A2($elm$http$Http$expectJson, $author$project$Main$LoadedInstructions, $author$project$Main$instructionRespondDecoder),
+			url: url
+		});
+};
+var $author$project$Main$LoadedSettings = function (a) {
+	return {$: 'LoadedSettings', a: a};
+};
+var $author$project$Main$Settings = F5(
+	function (columns, rows, blockSize, keyBinds, objUrl) {
+		return {blockSize: blockSize, columns: columns, keyBinds: keyBinds, objUrl: objUrl, rows: rows};
+	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$map5 = _Json_map5;
-var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Main$settingRespondDecoder = A6(
 	$elm$json$Json$Decode$map5,
 	$author$project$Main$Settings,
@@ -6371,25 +6385,19 @@ var $author$project$Main$settingRespondDecoder = A6(
 var $author$project$Main$getSettings = function (url) {
 	return $elm$http$Http$get(
 		{
-			expect: A2($elm$http$Http$expectJson, $author$project$Main$LoadedShapes, $author$project$Main$settingRespondDecoder),
+			expect: A2($elm$http$Http$expectJson, $author$project$Main$LoadedSettings, $author$project$Main$settingRespondDecoder),
 			url: url
 		});
 };
-var $author$project$Main$Obj = F2(
-	function (a, b) {
-		return {$: 'Obj', a: a, b: b};
-	});
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
+var $author$project$Main$ClosedDoor = {$: 'ClosedDoor'};
+var $author$project$Main$Dragon = {$: 'Dragon'};
+var $author$project$Main$Free = {$: 'Free'};
+var $author$project$Main$Key = {$: 'Key'};
+var $author$project$Main$Knight = {$: 'Knight'};
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
 var $elm$core$Basics$ge = _Utils_ge;
@@ -6507,72 +6515,60 @@ var $author$project$MyMatrix$size = function (matrix) {
 	var sizeX = $elm$core$Array$length(matrix);
 	return _Utils_Tuple2(sizeX, sizeY);
 };
-var $author$project$Main$initialGame = F3(
-	function (gameState, objs, maze) {
+var $author$project$Main$initialGame = F2(
+	function (gameState, maze) {
+		var rows = $author$project$MyMatrix$size(maze).b;
+		var columns = $author$project$MyMatrix$size(maze).a;
 		return {
+			fire: $elm$core$Maybe$Nothing,
+			fireDuration: 2,
 			gameState: gameState,
+			gameTime: 0,
+			ghostMode: false,
+			hp: ((columns * rows) / 2) | 0,
 			keyFound: false,
-			lastAction: 'right',
+			lastAction: 'move right',
+			maxHP: ((columns * rows) / 2) | 0,
 			mazeMatrix: A3(
 				$author$project$MyMatrix$set,
 				A3(
 					$author$project$MyMatrix$set,
-					maze,
-					_Utils_Tuple2(0, 1),
-					A2(
-						$author$project$Main$Obj,
-						'Free',
-						_Utils_Tuple2(0, 1))),
-				_Utils_Tuple2(
-					$author$project$MyMatrix$size(maze).a - 1,
-					1),
-				A2(
-					$author$project$Main$Obj,
-					'Closed Door',
-					_Utils_Tuple2(
-						$author$project$MyMatrix$size(maze).a - 1,
-						1))),
-			numberJumps: 1,
-			objects: _Utils_ap(
-				A2(
-					$elm$core$List$filter,
-					function (obj) {
-						if (obj.$ === 'Obj') {
-							if (obj.a === 'Open Door') {
-								return false;
-							} else {
-								return true;
-							}
-						} else {
-							return false;
-						}
-					},
-					objs),
-				_List_fromArray(
-					[
-						A2(
-						$author$project$Main$Obj,
-						'Closed Door',
-						_Utils_Tuple2(
-							$author$project$MyMatrix$size(maze).a - 1,
-							1))
-					])),
+					A3(
+						$author$project$MyMatrix$set,
+						A3(
+							$author$project$MyMatrix$set,
+							maze,
+							_Utils_Tuple2(0, 1),
+							$author$project$Main$Free),
+						_Utils_Tuple2(columns - 1, 1),
+						$author$project$Main$ClosedDoor),
+					_Utils_Tuple2(1, rows - 2),
+					$author$project$Main$Key),
+				_Utils_Tuple2(columns - 2, 1),
+				$author$project$Main$Dragon),
+			numberFire: 1,
+			numberFlashes: 1,
+			numberOrcs: 0,
+			oldMaze: A3(
+				$author$project$MyMatrix$set,
+				A3(
+					$author$project$MyMatrix$set,
+					A3(
+						$author$project$MyMatrix$set,
+						A3(
+							$author$project$MyMatrix$set,
+							maze,
+							_Utils_Tuple2(0, 1),
+							$author$project$Main$Free),
+						_Utils_Tuple2(columns - 1, 1),
+						$author$project$Main$ClosedDoor),
+					_Utils_Tuple2(1, rows - 2),
+					$author$project$Main$Key),
+				_Utils_Tuple2(columns - 2, 1),
+				$author$project$Main$Dragon),
+			player: $author$project$Main$Knight,
 			point: _Utils_Tuple2(0, 1),
-			walls: A2(
-				$elm$core$List$filter,
-				function (obj) {
-					if (obj.$ === 'Wall') {
-						if ((!obj.a.a) && (obj.a.b === 1)) {
-							var _v2 = obj.a;
-							return false;
-						} else {
-							return true;
-						}
-					} else {
-						return false;
-					}
-				},
-				objs)
+			spear: $elm$core$Maybe$Nothing
 		};
 	});
 var $author$project$Main$initialSettings = {blockSize: 20, columns: 21, keyBinds: $elm$core$Dict$empty, objUrl: $elm$core$Dict$empty, rows: 21};
@@ -6621,7 +6617,8 @@ var $author$project$Main$init = F3(
 	function (_v0, url, key) {
 		return _Utils_Tuple2(
 			{
-				game: A3($author$project$Main$initialGame, $author$project$Main$MazeCover, _List_Nil, $author$project$MyMatrix$empty),
+				game: A2($author$project$Main$initialGame, $author$project$Main$MazeCover, $author$project$MyMatrix$empty),
+				instructions: $elm$core$Dict$empty,
 				key: key,
 				randomIndexes: _List_Nil,
 				settings: $author$project$Main$initialSettings,
@@ -6634,7 +6631,8 @@ var $author$project$Main$init = F3(
 						$elm$random$Random$generate,
 						$author$project$Main$NewRandom,
 						A2($elm$random$Random$int, 0, 7)),
-						$author$project$Main$getSettings('ressources\\settings.json')
+						$author$project$Main$getSettings('ressources\\settings.json'),
+						$author$project$Main$getInstructions('ressources\\instructions.json')
 					])));
 	});
 var $author$project$Main$Press = function (a) {
@@ -6905,62 +6903,17 @@ var $elm$browser$Browser$Events$onKeyPress = A2($elm$browser$Browser$Events$on, 
 var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$browser$Browser$Events$onKeyPress($author$project$Main$keyDecoder);
 };
+var $author$project$Main$Duration = function (a) {
+	return {$: 'Duration', a: a};
+};
 var $author$project$Main$GenerateRandom = {$: 'GenerateRandom'};
 var $author$project$Main$Playing = {$: 'Playing'};
-var $elm$core$Elm$JsArray$map = _JsArray_map;
-var $elm$core$Array$map = F2(
-	function (func, _v0) {
-		var len = _v0.a;
-		var startShift = _v0.b;
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var helper = function (node) {
-			if (node.$ === 'SubTree') {
-				var subTree = node.a;
-				return $elm$core$Array$SubTree(
-					A2($elm$core$Elm$JsArray$map, helper, subTree));
-			} else {
-				var values = node.a;
-				return $elm$core$Array$Leaf(
-					A2($elm$core$Elm$JsArray$map, func, values));
-			}
-		};
-		return A4(
-			$elm$core$Array$Array_elm_builtin,
-			len,
-			startShift,
-			A2($elm$core$Elm$JsArray$map, helper, tree),
-			A2($elm$core$Elm$JsArray$map, func, tail));
-	});
-var $author$project$MyMatrix$toLists = function (matrix) {
-	return $elm$core$Array$toList(
-		A2($elm$core$Array$map, $elm$core$Array$toList, matrix));
+var $author$project$Main$Won = {$: 'Won'};
+var $author$project$Main$Death = {$: 'Death'};
+var $author$project$Main$Spear = function (a) {
+	return {$: 'Spear', a: a};
 };
-var $author$project$MyMatrix$toList = function (matrix) {
-	return A3(
-		$elm$core$List$foldr,
-		$elm$core$Basics$append,
-		_List_Nil,
-		$author$project$MyMatrix$toLists(matrix));
-};
-var $author$project$Main$buildMazeList = function (matrix) {
-	return A2(
-		$elm$core$List$cons,
-		A2(
-			$author$project$Main$Obj,
-			'Player',
-			_Utils_Tuple2(0, 1)),
-		A2(
-			$elm$core$List$filter,
-			function (obj) {
-				if ((obj.$ === 'Obj') && (obj.a === 'Free')) {
-					return false;
-				} else {
-					return true;
-				}
-			},
-			$author$project$MyMatrix$toList(matrix)));
-};
+var $author$project$Main$Wall = {$: 'Wall'};
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {
@@ -6986,6 +6939,214 @@ var $author$project$MyMatrix$get = F2(
 			y,
 			A2($author$project$MyMatrix$getXs, matrix, x));
 	});
+var $author$project$Main$Orc = {$: 'Orc'};
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $author$project$MyMatrix$firstNeighbours = F2(
+	function (matrix, _v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return A2(
+			$elm$core$List$filter,
+			function (_v1) {
+				var a = _v1.a;
+				var b = _v1.b;
+				return (a >= 0) && ((_Utils_cmp(
+					a,
+					$author$project$MyMatrix$size(matrix).a) < 0) && ((b >= 0) && (_Utils_cmp(
+					b,
+					$author$project$MyMatrix$size(matrix).b) < 0)));
+			},
+			_List_fromArray(
+				[
+					_Utils_Tuple2(x - 1, y),
+					_Utils_Tuple2(x, y - 1),
+					_Utils_Tuple2(x, y + 1),
+					_Utils_Tuple2(x + 1, y)
+				]));
+	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Main$setFire = function (game) {
+	var orcPoints = A2(
+		$elm$core$List$filter,
+		function (p) {
+			return _Utils_eq(
+				A2($author$project$MyMatrix$get, game.mazeMatrix, p),
+				$elm$core$Maybe$Just($author$project$Main$Orc));
+		},
+		A2($author$project$MyMatrix$firstNeighbours, game.mazeMatrix, game.point));
+	if (_Utils_eq(game.fire, $elm$core$Maybe$Nothing)) {
+		return $elm$core$Maybe$Nothing;
+	} else {
+		if ($elm$core$List$length(orcPoints) >= 1) {
+			return $elm$core$List$head(orcPoints);
+		} else {
+			var _v0 = game.point;
+			var x = _v0.a;
+			var y = _v0.b;
+			var _v1 = game.lastAction;
+			switch (_v1) {
+				case 'move up':
+					return $elm$core$Maybe$Just(
+						_Utils_Tuple2(x, y - 1));
+				case 'move left':
+					return $elm$core$Maybe$Just(
+						_Utils_Tuple2(x - 1, y));
+				case 'move down':
+					return $elm$core$Maybe$Just(
+						_Utils_Tuple2(x, y + 1));
+				case 'move right':
+					return $elm$core$Maybe$Just(
+						_Utils_Tuple2(x + 1, y));
+				default:
+					return $elm$core$Maybe$Nothing;
+			}
+		}
+	}
+};
+var $author$project$Main$throwSpear = function (game) {
+	var _v0 = game.point;
+	var x = _v0.a;
+	var y = _v0.b;
+	var _v1 = game.lastAction;
+	switch (_v1) {
+		case 'move up':
+			return _Utils_Tuple2(
+				_Utils_Tuple2(x, y - 2),
+				'315');
+		case 'move left':
+			return _Utils_Tuple2(
+				_Utils_Tuple2(x - 2, y),
+				'225');
+		case 'move down':
+			return _Utils_Tuple2(
+				_Utils_Tuple2(x, y + 2),
+				'135');
+		case 'move right':
+			return _Utils_Tuple2(
+				_Utils_Tuple2(x + 2, y),
+				'45');
+		default:
+			return _Utils_Tuple2(
+				_Utils_Tuple2(0, 0),
+				'0');
+	}
+};
+var $author$project$Main$attackResponse = function (game) {
+	if (_Utils_eq(
+		game.spear,
+		$elm$core$Maybe$Just(true))) {
+		var _v0 = $author$project$Main$throwSpear(game);
+		var p = _v0.a;
+		var r = _v0.b;
+		var obj = A2(
+			$elm$core$Maybe$withDefault,
+			$author$project$Main$Wall,
+			A2($author$project$MyMatrix$get, game.mazeMatrix, p));
+		switch (obj.$) {
+			case 'Dragon':
+				return _Utils_update(
+					game,
+					{
+						mazeMatrix: A3(
+							$author$project$MyMatrix$set,
+							game.mazeMatrix,
+							p,
+							$author$project$Main$Spear(r)),
+						numberFire: 1,
+						spear: $elm$core$Maybe$Nothing
+					});
+			case 'Orc':
+				return (game.numberOrcs === 4) ? _Utils_update(
+					game,
+					{
+						mazeMatrix: A3(
+							$author$project$MyMatrix$set,
+							game.mazeMatrix,
+							p,
+							$author$project$Main$Spear(r)),
+						numberOrcs: 0,
+						spear: $elm$core$Maybe$Just(false)
+					}) : _Utils_update(
+					game,
+					{
+						mazeMatrix: A3(
+							$author$project$MyMatrix$set,
+							game.mazeMatrix,
+							p,
+							$author$project$Main$Spear(r)),
+						numberOrcs: game.numberOrcs + 1,
+						spear: $elm$core$Maybe$Nothing
+					});
+			case 'Wall':
+				return _Utils_update(
+					game,
+					{spear: $elm$core$Maybe$Nothing});
+			default:
+				return _Utils_update(
+					game,
+					{
+						mazeMatrix: A3(
+							$author$project$MyMatrix$set,
+							game.mazeMatrix,
+							p,
+							$author$project$Main$Spear(r)),
+						spear: $elm$core$Maybe$Nothing
+					});
+		}
+	} else {
+		var newFire = $author$project$Main$setFire(game);
+		if (newFire.$ === 'Just') {
+			var p = newFire.a;
+			var obj = A2(
+				$elm$core$Maybe$withDefault,
+				$author$project$Main$Wall,
+				A2($author$project$MyMatrix$get, game.mazeMatrix, p));
+			if (obj.$ === 'Orc') {
+				return (game.numberOrcs === 4) ? _Utils_update(
+					game,
+					{
+						fire: newFire,
+						mazeMatrix: A3($author$project$MyMatrix$set, game.mazeMatrix, p, $author$project$Main$Death),
+						numberOrcs: 0,
+						spear: $elm$core$Maybe$Just(false)
+					}) : _Utils_update(
+					game,
+					{
+						fire: newFire,
+						mazeMatrix: A3($author$project$MyMatrix$set, game.mazeMatrix, p, $author$project$Main$Death),
+						numberOrcs: game.numberOrcs + 1
+					});
+			} else {
+				return _Utils_update(
+					game,
+					{
+						fire: (!game.fireDuration) ? $elm$core$Maybe$Nothing : $author$project$Main$setFire(game),
+						fireDuration: A2($elm$core$Basics$max, game.fireDuration - 1, 0)
+					});
+			}
+		} else {
+			return game;
+		}
+	}
+};
 var $author$project$Maze$connectVertices = F3(
 	function (maze, _v0, _v1) {
 		var x1 = _v0.a;
@@ -7028,15 +7189,6 @@ var $elm$core$List$drop = F2(
 			}
 		}
 	});
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $author$project$Maze$findElem = F2(
 	function (i, xs) {
 		return $elm$core$List$head(
@@ -7048,10 +7200,6 @@ var $author$project$Maze$modulo = F2(
 		return ((a <= 0) || (!b)) ? 0 : A2($elm$core$Basics$modBy, a, b);
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
-};
 var $author$project$MyMatrix$secondNeighbours = F2(
 	function (matrix, _v0) {
 		var x = _v0.a;
@@ -7172,81 +7320,40 @@ var $author$project$Maze$initMaze = F3(
 			rows: r
 		};
 	});
-var $author$project$Main$Wall = function (a) {
-	return {$: 'Wall', a: a};
-};
-var $author$project$MyMatrix$firstNeighbours = F2(
-	function (matrix, _v0) {
-		var x = _v0.a;
-		var y = _v0.b;
-		return A2(
-			$elm$core$List$filter,
-			function (_v1) {
-				var a = _v1.a;
-				var b = _v1.b;
-				return (a > 0) && ((_Utils_cmp(
-					a,
-					$author$project$MyMatrix$size(matrix).a) < 0) && ((b > 0) && (_Utils_cmp(
-					b,
-					$author$project$MyMatrix$size(matrix).b) < 0)));
-			},
-			_List_fromArray(
-				[
-					_Utils_Tuple2(x - 1, y),
-					_Utils_Tuple2(x, y - 1),
-					_Utils_Tuple2(x, y + 1),
-					_Utils_Tuple2(x + 1, y)
-				]));
-	});
+var $author$project$Main$Flash = {$: 'Flash'};
+var $author$project$Main$Ghost = {$: 'Ghost'};
+var $author$project$Main$Potion = {$: 'Potion'};
 var $author$project$Main$decodeMaze = F4(
 	function (maze, x, y, b) {
 		if (_Utils_eq(x, maze.columns - 1) && (y === 1)) {
-			return A2(
-				$author$project$Main$Obj,
-				'Closed Door',
-				_Utils_Tuple2(x, y));
+			return $author$project$Main$ClosedDoor;
 		} else {
-			if ((x === 1) && _Utils_eq(y, maze.rows - 2)) {
-				return A2(
-					$author$project$Main$Obj,
-					'Key',
-					_Utils_Tuple2(x, y));
+			if ((!x) && (y === 1)) {
+				return $author$project$Main$Free;
 			} else {
-				if ((!x) && (y === 1)) {
-					return A2(
-						$author$project$Main$Obj,
-						'Free',
-						_Utils_Tuple2(x, y));
-				} else {
-					if (b) {
-						var randomInt = A2(
+				if (b) {
+					var randomInt = function (i) {
+						return A2(
 							$elm$core$Maybe$withDefault,
 							0,
 							$elm$core$List$head(
-								A2($elm$core$List$drop, (x * y) - 1, maze.randomIndexes)));
-						var numberWalls = $elm$core$List$length(
+								A2($elm$core$List$drop, (x * y) - i, maze.randomIndexes)));
+					};
+					var numberWalls = $elm$core$List$length(
+						A2(
+							$elm$core$List$filter,
+							function (v) {
+								return _Utils_eq(
+									A2($author$project$MyMatrix$get, maze.matrix, v),
+									$elm$core$Maybe$Just(false));
+							},
 							A2(
-								$elm$core$List$filter,
-								function (v) {
-									return _Utils_eq(
-										A2($author$project$MyMatrix$get, maze.matrix, v),
-										$elm$core$Maybe$Just(false));
-								},
-								A2(
-									$author$project$MyMatrix$firstNeighbours,
-									maze.matrix,
-									_Utils_Tuple2(x, y))));
-						return ((numberWalls === 3) && (randomInt >= 6)) ? A2(
-							$author$project$Main$Obj,
-							'Additional Jump',
-							_Utils_Tuple2(x, y)) : A2(
-							$author$project$Main$Obj,
-							'Free',
-							_Utils_Tuple2(x, y));
-					} else {
-						return $author$project$Main$Wall(
-							_Utils_Tuple2(x, y));
-					}
+								$author$project$MyMatrix$firstNeighbours,
+								maze.matrix,
+								_Utils_Tuple2(x, y))));
+					return ((numberWalls === 3) && (_Utils_cmp(((maze.columns * maze.rows) / 2) | 0, x * y) < 0)) ? $author$project$Main$Flash : ((numberWalls === 2) ? (((randomInt(1) <= 1) && ((randomInt(4) >= 3) && (_Utils_cmp(y, (maze.rows / 2) | 0) < 0))) ? $author$project$Main$Orc : (((randomInt(1) <= 1) && ((randomInt(3) >= 2) && (_Utils_cmp(y, (maze.rows / 2) | 0) > 0))) ? $author$project$Main$Orc : (((randomInt(1) === 6) && ((randomInt(3) === 5) && ((_Utils_cmp(x, maze.columns) > 0) && (_Utils_cmp(y, maze.rows) < 0)))) ? $author$project$Main$Ghost : (((randomInt(1) === 4) && (randomInt(2) >= 5)) ? $author$project$Main$Potion : (((randomInt(1) >= 6) && (randomInt(3) <= 1)) ? $author$project$Main$Dragon : $author$project$Main$Free))))) : (((numberWalls === 1) && (_Utils_cmp(y, (maze.rows / 2) | 0) < 0)) ? $author$project$Main$Dragon : (((numberWalls === 1) && (_Utils_cmp(x, (maze.columns / 2) | 0) < 0)) ? $author$project$Main$Ghost : $author$project$Main$Free)));
+				} else {
+					return $author$project$Main$Wall;
 				}
 			}
 		}
@@ -7312,167 +7419,153 @@ var $author$project$Main$createNewGame = function (model) {
 	var newMaze = $author$project$Main$mazeDecoder(
 		$author$project$Maze$dfs(
 			A3($author$project$Maze$initMaze, model.settings.columns, model.settings.rows, model.randomIndexes)));
-	return A3(
-		$author$project$Main$initialGame,
-		$author$project$Main$Playing,
-		$author$project$Main$buildMazeList(newMaze),
-		newMaze);
+	return A2($author$project$Main$initialGame, $author$project$Main$Playing, newMaze);
 };
+var $author$project$Main$OpenDoor = {$: 'OpenDoor'};
 var $author$project$Main$Lost = {$: 'Lost'};
-var $author$project$Main$Won = {$: 'Won'};
-var $author$project$Main$removeObject = F2(
-	function (target, objs) {
-		return A2(
-			$elm$core$List$filter,
-			function (obj) {
-				return _Utils_eq(obj, target) ? false : true;
-			},
-			objs);
+var $author$project$Main$checkHP = F4(
+	function (game, newHP, newPoint, newObj) {
+		return game.ghostMode ? _Utils_update(
+			game,
+			{ghostMode: false, hp: game.hp, point: newPoint}) : ((newHP < 1) ? _Utils_update(
+			game,
+			{gameState: $author$project$Main$Lost, hp: 0, point: newPoint}) : _Utils_update(
+			game,
+			{
+				hp: newHP,
+				mazeMatrix: A3($author$project$MyMatrix$set, game.mazeMatrix, newPoint, newObj),
+				player: $author$project$Main$Knight,
+				point: newPoint
+			}));
+	});
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
 	});
 var $author$project$Main$gameResponse = F2(
 	function (game, newPoint) {
-		var obj = A2($author$project$MyMatrix$get, game.mazeMatrix, newPoint);
-		if (obj.$ === 'Nothing') {
-			return _Utils_update(
-				game,
-				{gameState: $author$project$Main$Lost});
-		} else {
-			if (obj.a.$ === 'Wall') {
+		var obj = A2(
+			$elm$core$Maybe$withDefault,
+			$author$project$Main$Wall,
+			A2($author$project$MyMatrix$get, game.mazeMatrix, newPoint));
+		switch (obj.$) {
+			case 'Wall':
+				return game.ghostMode ? _Utils_update(
+					game,
+					{ghostMode: false, point: newPoint}) : game;
+			case 'Free':
+				return game.ghostMode ? _Utils_update(
+					game,
+					{point: newPoint}) : A4($author$project$Main$checkHP, game, game.hp - 1, newPoint, $author$project$Main$Free);
+			case 'ClosedDoor':
+				return game;
+			case 'OpenDoor':
+				return _Utils_update(
+					game,
+					{gameState: $author$project$Main$Won, point: newPoint});
+			case 'Key':
+				var doorPoint = _Utils_Tuple2(
+					$author$project$MyMatrix$size(game.mazeMatrix).a - 1,
+					1);
 				return _Utils_update(
 					game,
 					{
-						gameState: $author$project$Main$Lost,
-						objects: A2($elm$core$List$drop, 1, game.objects)
+						keyFound: true,
+						mazeMatrix: A3(
+							$author$project$MyMatrix$set,
+							A3($author$project$MyMatrix$set, game.mazeMatrix, doorPoint, $author$project$Main$OpenDoor),
+							newPoint,
+							$author$project$Main$Free),
+						point: newPoint
 					});
-			} else {
-				switch (obj.a.a) {
-					case 'Open Door':
-						var _v1 = obj.a;
-						return _Utils_update(
-							game,
-							{
-								gameState: $author$project$Main$Won,
-								objects: A2(
-									$elm$core$List$cons,
-									A2($author$project$Main$Obj, 'Player', newPoint),
-									A2($elm$core$List$drop, 1, game.objects))
-							});
-					case 'Closed Door':
-						var _v2 = obj.a;
-						return game;
-					case 'Free':
-						if ((obj.a.b.a === 1) && (obj.a.b.b === 1)) {
-							var _v3 = obj.a;
-							var _v4 = _v3.b;
-							return _Utils_update(
-								game,
-								{
-									mazeMatrix: A3(
-										$author$project$MyMatrix$set,
-										game.mazeMatrix,
-										_Utils_Tuple2(0, 1),
-										$author$project$Main$Wall(
-											_Utils_Tuple2(0, 1))),
-									objects: A2(
-										$elm$core$List$cons,
-										A2($author$project$Main$Obj, 'Player', newPoint),
-										A2($elm$core$List$drop, 1, game.objects)),
-									point: newPoint,
-									walls: A2(
-										$elm$core$List$cons,
-										$author$project$Main$Wall(
-											_Utils_Tuple2(0, 1)),
-										game.walls)
-								});
-						} else {
-							var _v5 = obj.a;
-							return _Utils_update(
-								game,
-								{
-									objects: A2(
-										$elm$core$List$cons,
-										A2($author$project$Main$Obj, 'Player', newPoint),
-										A2($elm$core$List$drop, 1, game.objects)),
-									point: newPoint
-								});
-						}
-					case 'Key':
-						var _v6 = obj.a;
-						var p = _v6.b;
-						var doorPoint = _Utils_Tuple2(
-							$author$project$MyMatrix$size(game.mazeMatrix).a - 1,
-							1);
-						return _Utils_update(
-							game,
-							{
-								keyFound: true,
-								mazeMatrix: A3(
-									$author$project$MyMatrix$set,
-									game.mazeMatrix,
-									doorPoint,
-									A2($author$project$Main$Obj, 'Open Door', doorPoint)),
-								objects: _Utils_ap(
-									_List_fromArray(
-										[
-											A2($author$project$Main$Obj, 'Player', newPoint),
-											A2($author$project$Main$Obj, 'Open Door', doorPoint)
-										]),
-									A2(
-										$elm$core$List$drop,
-										1,
-										A2(
-											$author$project$Main$removeObject,
-											A2($author$project$Main$Obj, 'Closed Door', doorPoint),
-											A2(
-												$author$project$Main$removeObject,
-												A2($author$project$Main$Obj, 'Key', p),
-												game.objects)))),
-								point: newPoint
-							});
-					case 'Additional Jump':
-						var _v7 = obj.a;
-						var p = _v7.b;
-						return _Utils_update(
-							game,
-							{
-								numberJumps: game.numberJumps + 1,
-								objects: A2(
-									$elm$core$List$cons,
-									A2($author$project$Main$Obj, 'Player', newPoint),
-									A2(
-										$elm$core$List$drop,
-										1,
-										A2(
-											$author$project$Main$removeObject,
-											A2($author$project$Main$Obj, 'Additional Jump', p),
-											game.objects))),
-								point: newPoint
-							});
-					default:
-						return game;
-				}
-			}
+			case 'Flash':
+				return _Utils_update(
+					game,
+					{
+						mazeMatrix: A3($author$project$MyMatrix$set, game.mazeMatrix, newPoint, $author$project$Main$Free),
+						numberFlashes: game.numberFlashes + 1,
+						point: newPoint
+					});
+			case 'Dragon':
+				return game.ghostMode ? A4($author$project$Main$checkHP, game, game.hp, newPoint, $author$project$Main$Dragon) : A4(
+					$author$project$Main$checkHP,
+					_Utils_update(
+						game,
+						{numberFire: 1}),
+					game.hp - ((game.maxHP / 7) | 0),
+					newPoint,
+					$author$project$Main$Death);
+			case 'Orc':
+				return game.ghostMode ? A4($author$project$Main$checkHP, game, game.hp, newPoint, $author$project$Main$Orc) : ((game.numberOrcs === 4) ? A4(
+					$author$project$Main$checkHP,
+					_Utils_update(
+						game,
+						{
+							numberOrcs: 0,
+							spear: $elm$core$Maybe$Just(false)
+						}),
+					game.hp - ((game.maxHP / 7) | 0),
+					newPoint,
+					$author$project$Main$Death) : A4(
+					$author$project$Main$checkHP,
+					_Utils_update(
+						game,
+						{numberOrcs: game.numberOrcs + 1}),
+					game.hp - ((game.maxHP / 7) | 0),
+					newPoint,
+					$author$project$Main$Death));
+			case 'Potion':
+				return _Utils_update(
+					game,
+					{
+						hp: A2($elm$core$Basics$min, game.hp + ((game.maxHP / 13) | 0), game.maxHP),
+						mazeMatrix: A3($author$project$MyMatrix$set, game.mazeMatrix, newPoint, $author$project$Main$Free),
+						player: game.ghostMode ? $author$project$Main$Ghost : $author$project$Main$Knight,
+						point: newPoint
+					});
+			case 'Death':
+				return _Utils_update(
+					game,
+					{point: newPoint});
+			case 'Ghost':
+				return _Utils_update(
+					game,
+					{
+						ghostMode: true,
+						mazeMatrix: A3($author$project$MyMatrix$set, game.mazeMatrix, newPoint, $author$project$Main$Free),
+						player: $author$project$Main$Ghost,
+						point: newPoint
+					});
+			case 'Spear':
+				return _Utils_update(
+					game,
+					{
+						mazeMatrix: A3($author$project$MyMatrix$set, game.mazeMatrix, newPoint, $author$project$Main$Free),
+						point: newPoint
+					});
+			default:
+				return game;
 		}
 	});
-var $author$project$Main$jump = function (game) {
+var $author$project$Main$flash = function (game) {
 	var _v0 = game.lastAction;
 	switch (_v0) {
-		case 'up':
+		case 'move up':
 			return A2(
 				$author$project$Main$gameResponse,
 				game,
 				_Utils_Tuple2(game.point.a, game.point.b - 2));
-		case 'left':
+		case 'move left':
 			return A2(
 				$author$project$Main$gameResponse,
 				game,
 				_Utils_Tuple2(game.point.a - 2, game.point.b));
-		case 'down':
+		case 'move down':
 			return A2(
 				$author$project$Main$gameResponse,
 				game,
 				_Utils_Tuple2(game.point.a, game.point.b + 2));
-		case 'right':
+		case 'move right':
 			return A2(
 				$author$project$Main$gameResponse,
 				game,
@@ -7488,50 +7581,50 @@ var $author$project$Main$gameAction = F3(
 			A2(
 				$elm$core$Maybe$withDefault,
 				'',
-				A2($elm$core$Dict$get, 'up', settings.keyBinds))) ? A2(
+				A2($elm$core$Dict$get, 'move up', settings.keyBinds))) ? A2(
 			$author$project$Main$gameResponse,
 			_Utils_update(
 				game,
-				{lastAction: 'up'}),
+				{lastAction: 'move up'}),
 			_Utils_Tuple2(game.point.a, game.point.b - 1)) : (_Utils_eq(
 			value,
 			A2(
 				$elm$core$Maybe$withDefault,
 				'',
-				A2($elm$core$Dict$get, 'left', settings.keyBinds))) ? A2(
+				A2($elm$core$Dict$get, 'move left', settings.keyBinds))) ? A2(
 			$author$project$Main$gameResponse,
 			_Utils_update(
 				game,
-				{lastAction: 'left'}),
+				{lastAction: 'move left'}),
 			_Utils_Tuple2(game.point.a - 1, game.point.b)) : (_Utils_eq(
 			value,
 			A2(
 				$elm$core$Maybe$withDefault,
 				'',
-				A2($elm$core$Dict$get, 'down', settings.keyBinds))) ? A2(
+				A2($elm$core$Dict$get, 'move down', settings.keyBinds))) ? A2(
 			$author$project$Main$gameResponse,
 			_Utils_update(
 				game,
-				{lastAction: 'down'}),
+				{lastAction: 'move down'}),
 			_Utils_Tuple2(game.point.a, game.point.b + 1)) : (_Utils_eq(
 			value,
 			A2(
 				$elm$core$Maybe$withDefault,
 				'',
-				A2($elm$core$Dict$get, 'right', settings.keyBinds))) ? A2(
+				A2($elm$core$Dict$get, 'move right', settings.keyBinds))) ? A2(
 			$author$project$Main$gameResponse,
 			_Utils_update(
 				game,
-				{lastAction: 'right'}),
+				{lastAction: 'move right'}),
 			_Utils_Tuple2(game.point.a + 1, game.point.b)) : (_Utils_eq(
 			value,
 			A2(
 				$elm$core$Maybe$withDefault,
 				'',
-				A2($elm$core$Dict$get, 'jump', settings.keyBinds))) ? ((game.numberJumps > 0) ? $author$project$Main$jump(
+				A2($elm$core$Dict$get, 'flash', settings.keyBinds))) ? ((game.numberFlashes > 0) ? $author$project$Main$flash(
 			_Utils_update(
 				game,
-				{numberJumps: game.numberJumps - 1})) : game) : game))));
+				{numberFlashes: game.numberFlashes - 1})) : game) : game))));
 	});
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -7621,58 +7714,91 @@ var $elm$core$Dict$values = function (dict) {
 		_List_Nil,
 		dict);
 };
-var $author$project$Main$updateSettings = F3(
-	function (settingMsg, settings, newVal) {
+var $author$project$Main$updateSettings = F2(
+	function (settingMsg, model) {
+		var s = model.settings;
 		switch (settingMsg.$) {
 			case 'SetColumns':
-				return _Utils_update(
-					settings,
-					{
-						columns: A2(
-							$elm$core$Maybe$withDefault,
-							21,
-							$elm$core$String$toInt(newVal))
-					});
+				var newVal = settingMsg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							settings: _Utils_update(
+								s,
+								{
+									columns: A2(
+										$elm$core$Maybe$withDefault,
+										21,
+										$elm$core$String$toInt(newVal))
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'SetRows':
-				return _Utils_update(
-					settings,
-					{
-						rows: A2(
-							$elm$core$Maybe$withDefault,
-							21,
-							$elm$core$String$toInt(newVal))
-					});
+				var newVal = settingMsg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							settings: _Utils_update(
+								s,
+								{
+									rows: A2(
+										$elm$core$Maybe$withDefault,
+										21,
+										$elm$core$String$toInt(newVal))
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'SetBlockSize':
-				return _Utils_update(
-					settings,
-					{
-						blockSize: A2(
-							$elm$core$Maybe$withDefault,
-							25,
-							$elm$core$String$toInt(newVal))
-					});
-			default:
+				var newVal = settingMsg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							settings: _Utils_update(
+								s,
+								{
+									blockSize: A2(
+										$elm$core$Maybe$withDefault,
+										25,
+										$elm$core$String$toInt(newVal))
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'SetKeyBind':
 				var key = settingMsg.a;
+				var newVal = settingMsg.b;
 				return (($elm$core$String$length(newVal) === 1) && (!A2(
 					$elm$core$List$member,
 					newVal,
-					$elm$core$Dict$values(settings.keyBinds)))) ? _Utils_update(
-					settings,
-					{
-						keyBinds: A3(
-							$elm$core$Dict$update,
-							key,
-							function (_v1) {
-								return $elm$core$Maybe$Just(newVal);
-							},
-							settings.keyBinds)
-					}) : settings;
+					$elm$core$Dict$values(s.keyBinds)))) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							settings: _Utils_update(
+								s,
+								{
+									keyBinds: A3(
+										$elm$core$Dict$update,
+										key,
+										function (_v1) {
+											return $elm$core$Maybe$Just(newVal);
+										},
+										s.keyBinds)
+								})
+						}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					model,
+					$author$project$Main$getSettings('ressources\\settings.json'));
 		}
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'CreateMaze':
+			case 'CreateGame':
 				return (!_Utils_eq(model.game.gameState, $author$project$Main$Playing)) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7685,7 +7811,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							game: A3($author$project$Main$initialGame, $author$project$Main$MazeCover, _List_Nil, $author$project$MyMatrix$empty)
+							game: A2($author$project$Main$initialGame, $author$project$Main$MazeCover, $author$project$MyMatrix$empty)
 						}),
 					A2(
 						$elm$random$Random$generate,
@@ -7721,43 +7847,105 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							game: A3($author$project$Main$gameAction, model.game, model.settings, key)
+							game: $author$project$Main$attackResponse(
+								A3($author$project$Main$gameAction, model.game, model.settings, key))
 						}),
-					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					A2($elm$core$Task$perform, $author$project$Main$Duration, $elm$time$Time$now)) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'ItemClicked':
+				var obj = msg.a;
+				var g = model.game;
+				switch (obj.$) {
+					case 'Fire':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									game: $author$project$Main$attackResponse(
+										_Utils_update(
+											g,
+											{
+												fire: $elm$core$Maybe$Just(g.point),
+												fireDuration: g.fireDuration + 2,
+												numberFire: 0
+											}))
+								}),
+							$elm$core$Platform$Cmd$none);
+					case 'Flash':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									game: $author$project$Main$flash(g)
+								}),
+							$elm$core$Platform$Cmd$none);
+					case 'Spear':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									game: $author$project$Main$attackResponse(
+										_Utils_update(
+											g,
+											{
+												spear: $elm$core$Maybe$Just(true)
+											}))
+								}),
+							$elm$core$Platform$Cmd$none);
+					default:
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 			case 'UpdateSettings':
 				var settingMsg = msg.a;
-				var s = msg.b;
-				var g = model.game;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							game: _Utils_update(
-								g,
-								{gameState: $author$project$Main$MazeCover}),
-							settings: A3($author$project$Main$updateSettings, settingMsg, model.settings, s)
-						}),
-					$elm$core$Platform$Cmd$none);
+				return A2($author$project$Main$updateSettings, settingMsg, model);
 			case 'CloseModal':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							game: A3(
-								$author$project$Main$initialGame,
-								$author$project$Main$Playing,
-								$author$project$Main$buildMazeList(model.game.mazeMatrix),
-								model.game.mazeMatrix)
+							game: A2($author$project$Main$initialGame, $author$project$Main$Playing, model.game.oldMaze)
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 'LoadedShapes':
+			case 'Duration':
+				var time = msg.a;
+				var millis = $elm$time$Time$posixToMillis(time);
+				var g = model.game;
+				return (!g.gameTime) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							game: _Utils_update(
+								g,
+								{gameTime: millis})
+						}),
+					$elm$core$Platform$Cmd$none) : (_Utils_eq(model.game.gameState, $author$project$Main$Won) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							game: _Utils_update(
+								g,
+								{gameTime: millis - g.gameTime})
+						}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none));
+			case 'LoadedSettings':
 				var response = msg.a;
 				if (response.$ === 'Ok') {
-					var shapeResponse = response.a;
+					var settingResponse = response.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{settings: shapeResponse}),
+							{settings: settingResponse}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'LoadedInstructions':
+				var response = msg.a;
+				if (response.$ === 'Ok') {
+					var instructionResponse = response.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{instructions: instructionResponse}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -7780,16 +7968,22 @@ var $author$project$Main$update = F2(
 				}
 			default:
 				var url = msg.a;
+				var g = model.game;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{url: url}),
+						{
+							game: _Utils_update(
+								g,
+								{gameState: $author$project$Main$MazeCover}),
+							url: url
+						}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $author$project$Main$GenerateNewMaze = {$: 'GenerateNewMaze'};
-var $elm$html$Html$button = _VirtualDom_node('button');
+var $author$project$Main$Fire = {$: 'Fire'};
+var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -7799,29 +7993,294 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$Attributes$href = function (url) {
 	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$figure = _VirtualDom_node('figure');
+var $elm$html$Html$img = _VirtualDom_node('img');
+var $author$project$Main$objectToString = function (obj) {
+	switch (obj.$) {
+		case 'Knight':
+			return 'Knight';
+		case 'OpenDoor':
+			return 'OpenDoor';
+		case 'ClosedDoor':
+			return 'ClosedDoor';
+		case 'Key':
+			return 'Key';
+		case 'Flash':
+			return 'Flash';
+		case 'Dragon':
+			return 'Dragon';
+		case 'Orc':
+			return 'Orc';
+		case 'Potion':
+			return 'Potion';
+		case 'Death':
+			return 'Death';
+		case 'Ghost':
+			return 'Ghost';
+		case 'Fire':
+			return 'Fire';
+		case 'Spear':
+			return 'Spear';
+		case 'Free':
+			return '';
+		default:
+			return '';
+	}
+};
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $author$project$Main$viewObjectCard = F2(
+	function (model, obj) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('column card')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('card-content')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('media')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('media-left')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$figure,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('image is-48x48')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$img,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$src(
+															A2(
+																$elm$core$Maybe$withDefault,
+																'',
+																A2(
+																	$elm$core$Dict$get,
+																	$author$project$Main$objectToString(obj),
+																	model.settings.objUrl)))
+														]),
+													_List_Nil)
+												]))
+										])),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('media-content')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$p,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('title is-4 ')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text(
+													$author$project$Main$objectToString(obj))
+												]))
+										]))
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('content')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									A2(
+										$elm$core$Maybe$withDefault,
+										'',
+										A2(
+											$elm$core$Dict$get,
+											$author$project$Main$objectToString(obj),
+											model.instructions)))
+								]))
+						]))
+				]));
+	});
+var $author$project$Main$viewInstructions = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('box')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h1,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('subtitle')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Boosts')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('columns')
+							]),
+						_List_fromArray(
+							[
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Ghost),
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Potion),
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Flash),
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Death)
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('box')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h1,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('subtitle')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('General')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('columns')
+							]),
+						_List_fromArray(
+							[
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$OpenDoor),
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$ClosedDoor),
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Knight),
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Key)
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('box')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h1,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('subtitle')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Attacks and Enemies')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('columns')
+							]),
+						_List_fromArray(
+							[
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Fire),
+								A2(
+								$author$project$Main$viewObjectCard,
+								model,
+								$author$project$Main$Spear('')),
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Dragon),
+								A2($author$project$Main$viewObjectCard, model, $author$project$Main$Orc)
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('box')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h1,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('subtitle')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Settings')
+							])),
+						A2(
+						$elm$html$Html$a,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('block button is-info'),
+								$elm$html$Html$Attributes$href('#settings')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Adjust Keybinds and Maze measures')
+							]))
+					]))
+			]));
 };
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $elm$html$Html$h2 = _VirtualDom_node('h2');
 var $author$project$Main$viewHeader = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -7839,29 +8298,11 @@ var $author$project$Main$viewHeader = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Try to get out of the Maze')
-					])),
-				A2(
-				$elm$html$Html$h2,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('subtitle')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('But be carefull. The Walls are deadly!')
+						$elm$html$Html$text('Try to survive the Maze')
 					]))
 			]));
 };
-var $author$project$Main$modalFooter = function (modalButtons) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('modal-card-foot')
-			]),
-		modalButtons);
-};
+var $elm$html$Html$b = _VirtualDom_node('b');
 var $author$project$Main$CloseModal = {$: 'CloseModal'};
 var $elm$virtual_dom$VirtualDom$attribute = F2(
 	function (key, value) {
@@ -7874,8 +8315,25 @@ var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $author$project$Main$ariaLabel = function (value) {
 	return A2($elm$html$Html$Attributes$attribute, 'aria-label', value);
 };
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$header = _VirtualDom_node('header');
-var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $author$project$Main$modalHeader = function (title) {
 	return A2(
 		$elm$html$Html$header,
@@ -7906,10 +8364,16 @@ var $author$project$Main$modalHeader = function (title) {
 				_List_Nil)
 			]));
 };
+var $elm$core$String$right = F2(
+	function (n, string) {
+		return (n < 1) ? '' : A3(
+			$elm$core$String$slice,
+			-n,
+			$elm$core$String$length(string),
+			string);
+	});
 var $elm$html$Html$section = _VirtualDom_node('section');
 var $elm$html$Html$span = _VirtualDom_node('span');
-var $elm$html$Html$table = _VirtualDom_node('table');
-var $elm$html$Html$thead = _VirtualDom_node('thead');
 var $author$project$Main$viewModal = function (model) {
 	var _v0 = model.game.gameState;
 	switch (_v0.$) {
@@ -7958,37 +8422,48 @@ var $author$project$Main$viewModal = function (model) {
 										_List_fromArray(
 											[
 												A2(
-												$elm$html$Html$table,
+												$elm$html$Html$div,
 												_List_fromArray(
 													[
-														$elm$html$Html$Attributes$class('table')
+														A2($elm$html$Html$Attributes$style, 'color', 'red'),
+														A2($elm$html$Html$Attributes$style, 'font-size', '24px')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Game Over')
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('modal-card-foot')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$a,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('button is-info is-rounded'),
+														$elm$html$Html$Attributes$href('#settings')
 													]),
 												_List_fromArray(
 													[
 														A2(
-														$elm$html$Html$thead,
+														$elm$html$Html$b,
 														_List_Nil,
 														_List_fromArray(
 															[
-																A2(
-																$elm$html$Html$div,
-																_List_fromArray(
-																	[
-																		A2($elm$html$Html$Attributes$style, 'color', 'red'),
-																		A2($elm$html$Html$Attributes$style, 'font-size', '24px')
-																	]),
-																_List_fromArray(
-																	[
-																		$elm$html$Html$text('Game Over')
-																	]))
+																$elm$html$Html$text('Adjust Settings')
 															]))
 													]))
-											])),
-										$author$project$Main$modalFooter(_List_Nil)
+											]))
 									]))
 							]))
 					]));
 		case 'Won':
+			var millis = $elm$core$String$fromInt(model.game.gameTime);
 			return A2(
 				$elm$html$Html$div,
 				_List_Nil,
@@ -8033,33 +8508,41 @@ var $author$project$Main$viewModal = function (model) {
 										_List_fromArray(
 											[
 												A2(
-												$elm$html$Html$table,
+												$elm$html$Html$div,
 												_List_fromArray(
 													[
-														$elm$html$Html$Attributes$class('table')
+														A2($elm$html$Html$Attributes$style, 'color', 'gold'),
+														A2($elm$html$Html$Attributes$style, 'font-size', '24px')
 													]),
 												_List_fromArray(
 													[
+														$elm$html$Html$text('Congrats')
+													])),
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														A2($elm$html$Html$Attributes$style, 'font-size', '20px')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Completed in '),
+														$elm$html$Html$text(
 														A2(
-														$elm$html$Html$thead,
-														_List_Nil,
-														_List_fromArray(
-															[
-																A2(
-																$elm$html$Html$div,
-																_List_fromArray(
-																	[
-																		A2($elm$html$Html$Attributes$style, 'color', 'gold'),
-																		A2($elm$html$Html$Attributes$style, 'font-size', '24px')
-																	]),
-																_List_fromArray(
-																	[
-																		$elm$html$Html$text('Congrats')
-																	]))
-															]))
+															$elm$core$String$left,
+															$elm$core$String$length(millis) - 3,
+															millis) + ('.' + (A2($elm$core$String$right, 3, millis) + ' seconds'))),
+														$elm$html$Html$text(
+														' with ' + ($elm$core$String$fromInt(model.game.hp) + ' HP left.'))
 													]))
 											])),
-										$author$project$Main$modalFooter(_List_Nil)
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('modal-card-foot')
+											]),
+										_List_Nil)
 									]))
 							]))
 					]));
@@ -8067,21 +8550,14 @@ var $author$project$Main$viewModal = function (model) {
 			return A2($elm$html$Html$span, _List_Nil, _List_Nil);
 	}
 };
-var $author$project$Main$CreateMaze = {$: 'CreateMaze'};
-var $elm$html$Html$a = _VirtualDom_node('a');
-var $elm$html$Html$figure = _VirtualDom_node('figure');
+var $author$project$Main$CreateGame = {$: 'CreateGame'};
+var $author$project$Main$GenerateNewMaze = {$: 'GenerateNewMaze'};
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
-var $elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
-var $elm$html$Html$img = _VirtualDom_node('img');
-var $elm$core$Basics$round = _Basics_round;
+var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$image = $elm$svg$Svg$trustedNode('image');
-var $elm$svg$Svg$rect = $elm$svg$Svg$trustedNode('rect');
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $elm$svg$Svg$Attributes$transform = _VirtualDom_attribute('transform');
 var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
 var $elm$svg$Svg$Attributes$xlinkHref = function (value) {
@@ -8092,64 +8568,353 @@ var $elm$svg$Svg$Attributes$xlinkHref = function (value) {
 		_VirtualDom_noJavaScriptUri(value));
 };
 var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
-var $author$project$Main$shapesToSVG = function (model) {
-	return A2(
-		$elm$core$List$map,
-		function (obj) {
-			var size = model.settings.blockSize;
-			if (obj.$ === 'Obj') {
-				var s = obj.a;
-				var _v1 = obj.b;
-				var x = _v1.a;
-				var y = _v1.b;
+var $author$project$Main$objectToSvg = F3(
+	function (model, p, obj) {
+		var s = model.settings;
+		if (p.$ === 'Nothing') {
+			return A2($elm$svg$Svg$svg, _List_Nil, _List_Nil);
+		} else {
+			var _v1 = p.a;
+			var x = _v1.a;
+			var y = _v1.b;
+			if (obj.$ === 'Spear') {
+				var r = obj.a;
 				return A2(
 					$elm$svg$Svg$image,
 					_List_fromArray(
 						[
 							$elm$svg$Svg$Attributes$x(
-							$elm$core$String$fromInt(x * size)),
+							$elm$core$String$fromInt(x * s.blockSize)),
 							$elm$svg$Svg$Attributes$y(
-							$elm$core$String$fromInt(y * size)),
+							$elm$core$String$fromInt(y * s.blockSize)),
 							$elm$svg$Svg$Attributes$width(
-							$elm$core$String$fromInt(size)),
+							$elm$core$String$fromInt(s.blockSize)),
 							$elm$svg$Svg$Attributes$height(
-							$elm$core$String$fromInt(size)),
+							$elm$core$String$fromInt(s.blockSize)),
+							$elm$svg$Svg$Attributes$transform(
+							'rotate(' + (r + (',' + ($elm$core$String$fromFloat((x * s.blockSize) + (s.blockSize / 2)) + (',' + ($elm$core$String$fromFloat((y * s.blockSize) + (s.blockSize / 2)) + ')')))))),
 							$elm$svg$Svg$Attributes$xlinkHref(
 							A2(
 								$elm$core$Maybe$withDefault,
 								'',
-								A2($elm$core$Dict$get, s, model.settings.objUrl)))
+								A2(
+									$elm$core$Dict$get,
+									$author$project$Main$objectToString(obj),
+									model.settings.objUrl)))
 						]),
 					_List_Nil);
 			} else {
-				var _v2 = obj.a;
-				var x = _v2.a;
-				var y = _v2.b;
 				return A2(
-					$elm$svg$Svg$rect,
+					$elm$svg$Svg$image,
 					_List_fromArray(
 						[
 							$elm$svg$Svg$Attributes$x(
-							$elm$core$String$fromInt(x * size)),
+							$elm$core$String$fromInt(x * model.settings.blockSize)),
 							$elm$svg$Svg$Attributes$y(
-							$elm$core$String$fromInt(y * size)),
+							$elm$core$String$fromInt(y * model.settings.blockSize)),
 							$elm$svg$Svg$Attributes$width(
-							$elm$core$String$fromInt(size)),
+							$elm$core$String$fromInt(model.settings.blockSize)),
 							$elm$svg$Svg$Attributes$height(
-							$elm$core$String$fromInt(size))
+							$elm$core$String$fromInt(model.settings.blockSize)),
+							$elm$svg$Svg$Attributes$xlinkHref(
+							A2(
+								$elm$core$Maybe$withDefault,
+								'',
+								A2(
+									$elm$core$Dict$get,
+									$author$project$Main$objectToString(obj),
+									model.settings.objUrl)))
 						]),
 					_List_Nil);
 			}
-		},
-		_Utils_ap(model.game.objects, model.game.walls));
+		}
+	});
+var $elm$svg$Svg$rect = $elm$svg$Svg$trustedNode('rect');
+var $elm$svg$Svg$Attributes$style = _VirtualDom_attribute('style');
+var $elm$core$Elm$JsArray$map = _JsArray_map;
+var $elm$core$Array$map = F2(
+	function (func, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = function (node) {
+			if (node.$ === 'SubTree') {
+				var subTree = node.a;
+				return $elm$core$Array$SubTree(
+					A2($elm$core$Elm$JsArray$map, helper, subTree));
+			} else {
+				var values = node.a;
+				return $elm$core$Array$Leaf(
+					A2($elm$core$Elm$JsArray$map, func, values));
+			}
+		};
+		return A4(
+			$elm$core$Array$Array_elm_builtin,
+			len,
+			startShift,
+			A2($elm$core$Elm$JsArray$map, helper, tree),
+			A2($elm$core$Elm$JsArray$map, func, tail));
+	});
+var $author$project$MyMatrix$toLists = function (matrix) {
+	return $elm$core$Array$toList(
+		A2($elm$core$Array$map, $elm$core$Array$toList, matrix));
 };
-var $elm$html$Html$Attributes$src = function (url) {
+var $author$project$MyMatrix$toList = function (matrix) {
+	return A3(
+		$elm$core$List$foldr,
+		$elm$core$Basics$append,
+		_List_Nil,
+		$author$project$MyMatrix$toLists(matrix));
+};
+var $author$project$Main$objectMatrixToSVG = function (model) {
+	return $author$project$MyMatrix$toList(
+		A2(
+			$author$project$MyMatrix$indexedMap,
+			F3(
+				function (x, y, obj) {
+					switch (obj.$) {
+						case 'Wall':
+							return A2(
+								$elm$svg$Svg$rect,
+								_List_fromArray(
+									[
+										$elm$svg$Svg$Attributes$x(
+										$elm$core$String$fromInt(x * model.settings.blockSize)),
+										$elm$svg$Svg$Attributes$y(
+										$elm$core$String$fromInt(y * model.settings.blockSize)),
+										$elm$svg$Svg$Attributes$width(
+										$elm$core$String$fromInt(model.settings.blockSize)),
+										$elm$svg$Svg$Attributes$height(
+										$elm$core$String$fromInt(model.settings.blockSize)),
+										$elm$svg$Svg$Attributes$style('background-color: black')
+									]),
+								_List_Nil);
+						case 'Free':
+							return A2($elm$svg$Svg$svg, _List_Nil, _List_Nil);
+						default:
+							return A3(
+								$author$project$Main$objectToSvg,
+								model,
+								$elm$core$Maybe$Just(
+									_Utils_Tuple2(x, y)),
+								obj);
+					}
+				}),
+			model.game.mazeMatrix));
+};
+var $elm$core$Basics$round = _Basics_round;
+var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
+var $elm$html$Html$progress = _VirtualDom_node('progress');
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$Main$viewHealthBar = function (model) {
+	var maxHP = ((model.settings.rows * model.settings.columns) / 2) | 0;
+	var hp = model.game.hp;
+	var color = (_Utils_cmp(hp, (maxHP / 2) | 0) > -1) ? 'is-success' : ((_Utils_cmp(hp, (maxHP / 4) | 0) > -1) ? 'is-warning' : 'is-danger');
 	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$progress,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('block progress hpBar ' + color),
+						$elm$html$Html$Attributes$value(
+						$elm$core$String$fromInt(hp)),
+						$elm$html$Html$Attributes$max(
+						$elm$core$String$fromInt(maxHP))
+					]),
+				_List_Nil)
+			]));
 };
-var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $author$project$Main$ItemClicked = function (a) {
+	return {$: 'ItemClicked', a: a};
+};
+var $elm$html$Html$Attributes$height = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'height',
+		$elm$core$String$fromInt(n));
+};
+var $elm$html$Html$Attributes$width = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'width',
+		$elm$core$String$fromInt(n));
+};
+var $author$project$Main$objectToImg = F2(
+	function (model, obj) {
+		return A2(
+			$elm$html$Html$img,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$width(model.settings.blockSize * 2),
+					$elm$html$Html$Attributes$height(model.settings.blockSize * 2),
+					$elm$html$Html$Attributes$src(
+					A2(
+						$elm$core$Maybe$withDefault,
+						'',
+						A2(
+							$elm$core$Dict$get,
+							$author$project$Main$objectToString(obj),
+							model.settings.objUrl))),
+					$elm$html$Html$Attributes$class('itemImg'),
+					$elm$html$Html$Events$onClick(
+					$author$project$Main$ItemClicked(obj))
+				]),
+			_List_Nil);
+	});
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $author$project$Main$viewItems = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('column'),
+				A2(
+				$elm$html$Html$Attributes$style,
+				'height',
+				$elm$core$String$fromInt(model.settings.rows * model.settings.blockSize)),
+				A2($elm$html$Html$Attributes$style, 'margin', '13 0 0 30'),
+				A2($elm$html$Html$Attributes$style, 'border', '4px solid hsl(141, 71%, 48%)')
+			]),
+		_Utils_ap(
+			_List_fromArray(
+				[
+					model.game.keyFound ? A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'font-size', '18')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$b,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Key')
+								]))
+						])) : A2($elm$html$Html$span, _List_Nil, _List_Nil),
+					model.game.keyFound ? A2($author$project$Main$objectToImg, model, $author$project$Main$Key) : A2($elm$html$Html$span, _List_Nil, _List_Nil),
+					(model.game.ghostMode || (model.game.numberFlashes > 0)) ? A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'font-size', '18')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$b,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Boosts')
+								]))
+						])) : A2($elm$html$Html$span, _List_Nil, _List_Nil),
+					model.game.ghostMode ? A2($author$project$Main$objectToImg, model, $author$project$Main$Ghost) : A2($elm$html$Html$span, _List_Nil, _List_Nil)
+				]),
+			_Utils_ap(
+				A2(
+					$elm$core$List$repeat,
+					model.game.numberFlashes,
+					A2($author$project$Main$objectToImg, model, $author$project$Main$Flash)),
+				_Utils_ap(
+					_List_fromArray(
+						[
+							((!_Utils_eq(model.game.spear, $elm$core$Maybe$Nothing)) || (model.game.numberFire > 0)) ? A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									A2($elm$html$Html$Attributes$style, 'font-size', '18')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$b,
+									_List_Nil,
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Attacks')
+										]))
+								])) : A2($elm$html$Html$span, _List_Nil, _List_Nil),
+							(!_Utils_eq(model.game.spear, $elm$core$Maybe$Nothing)) ? A2(
+							$author$project$Main$objectToImg,
+							model,
+							$author$project$Main$Spear('0')) : A2($elm$html$Html$span, _List_Nil, _List_Nil)
+						]),
+					_Utils_ap(
+						A2(
+							$elm$core$List$repeat,
+							model.game.numberFire,
+							A2($author$project$Main$objectToImg, model, $author$project$Main$Fire)),
+						(model.game.numberOrcs > 0) ? _List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'font-size', '18')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$b,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Orcs')
+											]))
+									])),
+								A2($author$project$Main$objectToImg, model, $author$project$Main$Orc),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'font-size', '14'),
+										A2($elm$html$Html$Attributes$style, 'width', '35%'),
+										A2($elm$html$Html$Attributes$style, 'margin', 'auto')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$b,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$elm$core$String$fromInt(model.game.numberOrcs))
+											]))
+									]))
+							]) : _List_fromArray(
+							[
+								A2($elm$html$Html$span, _List_Nil, _List_Nil)
+							]))))));
+};
 var $author$project$Main$viewSvg = function (model) {
 	var width = model.settings.columns * model.settings.blockSize;
 	var height = model.settings.rows * model.settings.blockSize;
@@ -8189,6 +8954,11 @@ var $author$project$Main$viewSvg = function (model) {
 									'width',
 									$elm$core$String$fromInt(
 										$elm$core$Basics$round(width * 0.6))),
+									A2(
+									$elm$html$Html$Attributes$style,
+									'height',
+									$elm$core$String$fromInt(
+										$elm$core$Basics$round(height * 0.7))),
 									$elm$html$Html$Attributes$class('coverImage')
 								]),
 							_List_Nil),
@@ -8197,7 +8967,7 @@ var $author$project$Main$viewSvg = function (model) {
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('button is-success is-rounded block coverButton'),
-									$elm$html$Html$Events$onClick($author$project$Main$CreateMaze)
+									$elm$html$Html$Events$onClick($author$project$Main$CreateGame)
 								]),
 							_List_fromArray(
 								[
@@ -8208,11 +8978,11 @@ var $author$project$Main$viewSvg = function (model) {
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('button is-info is-rounded block coverButton'),
-									$elm$html$Html$Attributes$href('#settings')
+									$elm$html$Html$Attributes$href('#instructions')
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Keybinds')
+									$elm$html$Html$text('Instructions')
 								]))
 						]))
 				]));
@@ -8221,34 +8991,79 @@ var $author$project$Main$viewSvg = function (model) {
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('container maze block'),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'width',
-					$elm$core$String$fromInt(width)),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'height',
-					$elm$core$String$fromInt(height))
+					$elm$html$Html$Attributes$class('columns')
 				]),
 			_List_fromArray(
 				[
 					A2(
-					$elm$html$Html$figure,
-					_List_Nil,
+					$elm$html$Html$div,
 					_List_fromArray(
 						[
 							A2(
-							$elm$svg$Svg$svg,
+							$elm$html$Html$Attributes$style,
+							'width',
+							$elm$core$String$fromInt(width)),
+							$elm$html$Html$Attributes$class('column block')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$svg$Svg$Attributes$width(
+									$elm$html$Html$Attributes$class('container maze block'),
+									A2(
+									$elm$html$Html$Attributes$style,
+									'width',
 									$elm$core$String$fromInt(width)),
-									$elm$svg$Svg$Attributes$height(
+									A2(
+									$elm$html$Html$Attributes$style,
+									'height',
 									$elm$core$String$fromInt(height))
 								]),
-							$author$project$Main$shapesToSVG(model))
-						]))
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$figure,
+									_List_Nil,
+									_List_fromArray(
+										[
+											A2(
+											$elm$svg$Svg$svg,
+											_List_fromArray(
+												[
+													$elm$svg$Svg$Attributes$width(
+													$elm$core$String$fromInt(width)),
+													$elm$svg$Svg$Attributes$height(
+													$elm$core$String$fromInt(height))
+												]),
+											_Utils_ap(
+												_List_fromArray(
+													[
+														A3(
+														$author$project$Main$objectToSvg,
+														model,
+														$elm$core$Maybe$Just(model.game.point),
+														model.game.player),
+														A3($author$project$Main$objectToSvg, model, model.game.fire, $author$project$Main$Fire)
+													]),
+												$author$project$Main$objectMatrixToSVG(model)))
+										])),
+									$author$project$Main$viewHealthBar(model),
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class(' button is-success is-rounded mazeButton block'),
+											$elm$html$Html$Events$onClick($author$project$Main$GenerateNewMaze)
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('New Maze')
+										]))
+								]))
+						])),
+					$author$project$Main$viewItems(model)
 				]));
 	}
 };
@@ -8272,22 +9087,10 @@ var $author$project$Main$viewMaze = function (model) {
 				_List_fromArray(
 					[
 						$author$project$Main$viewModal(model),
-						$author$project$Main$viewSvg(model),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class(' button is-success is-rounded mazeButton block'),
-								$elm$html$Html$Events$onClick($author$project$Main$GenerateNewMaze)
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('New Maze')
-							]))
+						$author$project$Main$viewSvg(model)
 					]))
 			]));
 };
-var $elm$html$Html$b = _VirtualDom_node('b');
 var $elm$html$Html$i = _VirtualDom_node('i');
 var $elm$html$Html$nav = _VirtualDom_node('nav');
 var $author$project$Main$viewNavbar = A2(
@@ -8332,19 +9135,57 @@ var $author$project$Main$viewNavbar = A2(
 									_List_Nil),
 									A2(
 									$elm$html$Html$span,
-									_List_Nil,
+									_List_fromArray(
+										[
+											A2($elm$html$Html$Attributes$style, 'color', 'white')
+										]),
 									_List_fromArray(
 										[
 											A2(
 											$elm$html$Html$b,
-											_List_fromArray(
-												[
-													A2($elm$html$Html$Attributes$style, 'color', 'white')
-												]),
+											_List_Nil,
 											_List_fromArray(
 												[
 													$elm$html$Html$text('Maze')
 												]))
+										]))
+								]))
+						]))
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('navbar-brand')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('navbar-item'),
+							$elm$html$Html$Attributes$href('#instructions')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$h1,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('title')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$b,
+									_List_fromArray(
+										[
+											A2($elm$html$Html$Attributes$style, 'color', 'white')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Instructions')
 										]))
 								]))
 						]))
@@ -8394,16 +9235,21 @@ var $author$project$Main$viewNavbar = A2(
 						]))
 				]))
 		]));
-var $author$project$Main$SetBlockSize = {$: 'SetBlockSize'};
-var $author$project$Main$SetColumns = {$: 'SetColumns'};
-var $author$project$Main$SetRows = {$: 'SetRows'};
-var $author$project$Main$UpdateSettings = F2(
-	function (a, b) {
-		return {$: 'UpdateSettings', a: a, b: b};
-	});
+var $author$project$Main$Reset = {$: 'Reset'};
+var $author$project$Main$SetBlockSize = function (a) {
+	return {$: 'SetBlockSize', a: a};
+};
+var $author$project$Main$SetColumns = function (a) {
+	return {$: 'SetColumns', a: a};
+};
+var $author$project$Main$SetRows = function (a) {
+	return {$: 'SetRows', a: a};
+};
+var $author$project$Main$UpdateSettings = function (a) {
+	return {$: 'UpdateSettings', a: a};
+};
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
-var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
@@ -8436,9 +9282,10 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
-var $author$project$Main$SetKeyBind = function (a) {
-	return {$: 'SetKeyBind', a: a};
-};
+var $author$project$Main$SetKeyBind = F2(
+	function (a, b) {
+		return {$: 'SetKeyBind', a: a, b: b};
+	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$html$Html$td = _VirtualDom_node('td');
 var $elm$core$String$toUpper = _String_toUpper;
@@ -8503,8 +9350,10 @@ var $author$project$Main$setKeyBinds = F3(
 										$elm$html$Html$Attributes$type_('text'),
 										$elm$html$Html$Attributes$placeholder('Insert Character'),
 										$elm$html$Html$Events$onInput(
-										$author$project$Main$UpdateSettings(
-											$author$project$Main$SetKeyBind(k)))
+										function (_new) {
+											return $author$project$Main$UpdateSettings(
+												A2($author$project$Main$SetKeyBind, k, _new));
+										})
 									]),
 								_List_Nil)
 							]))
@@ -8514,8 +9363,9 @@ var $author$project$Main$setKeyBinds = F3(
 var $elm$html$Html$Attributes$step = function (n) {
 	return A2($elm$html$Html$Attributes$stringProperty, 'step', n);
 };
+var $elm$html$Html$table = _VirtualDom_node('table');
 var $elm$html$Html$tbody = _VirtualDom_node('tbody');
-var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $elm$html$Html$thead = _VirtualDom_node('thead');
 var $author$project$Main$viewSettings = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -8603,7 +9453,10 @@ var $author$project$Main$viewSettings = function (model) {
 										$elm$html$Html$Attributes$value(
 										$elm$core$String$fromInt(model.settings.columns)),
 										$elm$html$Html$Events$onInput(
-										$author$project$Main$UpdateSettings($author$project$Main$SetColumns))
+										function (_new) {
+											return $author$project$Main$UpdateSettings(
+												$author$project$Main$SetColumns(_new));
+										})
 									]),
 								_List_Nil),
 								A2(
@@ -8640,7 +9493,10 @@ var $author$project$Main$viewSettings = function (model) {
 										$elm$html$Html$Attributes$value(
 										$elm$core$String$fromInt(model.settings.rows)),
 										$elm$html$Html$Events$onInput(
-										$author$project$Main$UpdateSettings($author$project$Main$SetRows))
+										function (_new) {
+											return $author$project$Main$UpdateSettings(
+												$author$project$Main$SetRows(_new));
+										})
 									]),
 								_List_Nil),
 								A2(
@@ -8673,11 +9529,14 @@ var $author$project$Main$viewSettings = function (model) {
 										$elm$html$Html$Attributes$class('slider'),
 										$elm$html$Html$Attributes$min('15'),
 										$elm$html$Html$Attributes$max('33'),
-										$elm$html$Html$Attributes$step('2'),
+										$elm$html$Html$Attributes$step('1'),
 										$elm$html$Html$Attributes$value(
 										$elm$core$String$fromInt(model.settings.blockSize)),
 										$elm$html$Html$Events$onInput(
-										$author$project$Main$UpdateSettings($author$project$Main$SetBlockSize))
+										function (_new) {
+											return $author$project$Main$UpdateSettings(
+												$author$project$Main$SetBlockSize(_new));
+										})
 									]),
 								_List_Nil),
 								A2(
@@ -8693,10 +9552,73 @@ var $author$project$Main$viewSettings = function (model) {
 										$elm$core$String$fromInt(model.settings.blockSize))
 									]))
 							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('box')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('block button is-danger'),
+								$elm$html$Html$Events$onClick(
+								$author$project$Main$UpdateSettings($author$project$Main$Reset))
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Reset Settings')
+							]))
 					]))
 			]));
 };
 var $author$project$Main$view = function (model) {
+	var _v0 = model.url.fragment;
+	_v0$2:
+	while (true) {
+		if (_v0.$ === 'Just') {
+			switch (_v0.a) {
+				case 'settings':
+					return {
+						body: _List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$author$project$Main$viewNavbar,
+										$author$project$Main$viewSettings(model)
+									]))
+							]),
+						title: 'Settings'
+					};
+				case 'instructions':
+					return {
+						body: _List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$author$project$Main$viewNavbar,
+										$author$project$Main$viewInstructions(model)
+									]))
+							]),
+						title: 'Instructions'
+					};
+				default:
+					break _v0$2;
+			}
+		} else {
+			break _v0$2;
+		}
+	}
 	return {
 		body: _List_fromArray(
 			[
@@ -8706,14 +9628,7 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$author$project$Main$viewNavbar,
-						function () {
-						var _v0 = model.url.fragment;
-						if ((_v0.$ === 'Just') && (_v0.a === 'settings')) {
-							return $author$project$Main$viewSettings(model);
-						} else {
-							return $author$project$Main$viewMaze(model);
-						}
-					}()
+						$author$project$Main$viewMaze(model)
 					]))
 			]),
 		title: 'Maze'

@@ -188,7 +188,7 @@ secondNeighbours matrix (x,y) =
 
 firstNeighbours : Matrix a -> (Int,Int) -> List ( Int, Int )
 firstNeighbours matrix (x,y) =
-    List.filter (\(a,b) -> a > 0 && a < first (size matrix) && b > 0 && b < second (size matrix))
+    List.filter (\(a,b) -> a >= 0 && a < first (size matrix) && b >= 0 && b < second (size matrix))
     [ ( x - 1, y )            
     , ( x, y - 1 )
     , ( x, y + 1 )            

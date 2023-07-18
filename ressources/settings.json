@@ -3,18 +3,25 @@
     "columns": 21,
     "blockSize": 25,
     "KeyBinds":
-        { "up": "w"
-        , "left": "a"
-        , "right": "d"
-        , "down": "s"
-        , "jump": " "
+        { "move up": "w"
+        , "move right": "d"
+        , "move down": "s"
+        , "move left": "a"
+        , "flash": " "
         },
     "Objects":
-        { "Player": "https://cdn-icons-png.flaticon.com/128/10436/10436765.png"
-        , "Open Door": "https://cdn-icons-png.flaticon.com/128/7917/7917260.png"
-        , "Closed Door": "https://cdn-icons-png.flaticon.com/128/32/32533.png"
-        , "Key": "https://cdn-icons-png.flaticon.com/128/501/501884.png"
-        , "Additional Jump": "https://cdn-icons-png.flaticon.com/128/58/58177.png"
+        { "Knight": "https://cdn-icons-png.flaticon.com/128/1680/1680373.png"
+        , "OpenDoor": "https://cdn-icons-png.flaticon.com/128/7917/7917260.png"
+        , "ClosedDoor": "https://cdn-icons-png.flaticon.com/128/32/32533.png"
+        , "Key": "https://cdn-icons-png.flaticon.com/128/1643/1643186.png"
+        , "Flash": "https://cdn-icons-png.flaticon.com/128/252/252590.png"
+        , "Dragon": "https://cdn-icons-png.flaticon.com/128/2603/2603009.png"
+        , "Orc": "https://cdn-icons-png.flaticon.com/128/8282/8282891.png"
+        , "Potion": "https://cdn-icons-png.flaticon.com/128/7778/7778835.png"
+        , "Death": "https://cdn-icons-png.flaticon.com/128/2699/2699726.png"
+        , "Ghost": "https://cdn-icons-png.flaticon.com/128/3443/3443094.png"
+        , "Fire": "https://cdn-icons-png.flaticon.com/128/3426/3426127.png"
+        , "Spear": "https://cdn-icons-png.flaticon.com/128/506/506906.png"
         }
 }
     

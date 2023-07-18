@@ -1,0 +1,15 @@
+{ "Instructions":
+        { "Knight": "The Knight is your default character. You loose HP while walking. If you face an enemy the Knight will kill the enemy if you have enough HP."
+        , "OpenDoor": "If you reach the open door with at least 1 HP you win the Game."
+        , "ClosedDoor": "If you try to go through the closed door nothing will happen."
+        , "Key": "If you walk on the Key your character collects it and the Door can be opened."
+        , "Flash": "If you click on the Flash icon next Maze to the or press the correct keybind you flash to the second field in the direction of you last movement without touching the field in-between. You can't flash into the wall unless your character is a Ghost. In contrast to League of Legends you can stack Flashes :D"
+        , "Dragon": "If you are one a field with a Dragon you will get attacked and loose a lot of HP unless you are a Ghost. If you kill a Dragon you can Attack with Fire. But be carefull Dragons are fireproof. They can only be killed with a Spear when faced by a Knight."
+        , "Orc": "If you are one a field with an Orc you will get attacked and loose some HP unless you are a Ghost. If you kill 5 Orcs you get a Spear."
+        , "Potion": "If you are one a field with Potion you will gain some HP. Be carefull with spears because they can break the Potion. At least Potions are fireproof."
+        , "Death": "After an enemy has been killed the field immedeatly is marked as Dead. If you touch such a field you won't loose HP and you get an extra movement if Fire is active."
+        , "Ghost": "You immedeatly became a Ghost if you walk on one. As a Ghost you can go through one wall or one enemy without beeing effected. But than your character becomes a Knight again. As your movement is hovering you do not loose HP while moveing."
+        , "Fire": "If you have killed a Dragon you can attack with Fire but only Orcs will be killed. You need to click one the Fire icon next to the Maze to activate the Attack. Your character can aim on his one. In general you Fire is active for 2 movements but you get one extra movement if you touch a field marked as Dead. You can't stack Fire and it can't be seen in Walls."
+        , "Spear": "If you kill 5 Orcs you get a Spear but you can't get more then one. You need to click one the Spear icon next to the Maze to throw the weapon. It hits the second field in the direction of your last movement and flies over the first field without effecting it. But be carefull Spears can break Potions. A field with a Spear has the same characteristics as a field marked as Dead."
+        }
+}
