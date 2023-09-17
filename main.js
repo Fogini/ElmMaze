@@ -7553,22 +7553,30 @@ var $author$project$Main$flash = function (game) {
 		case 'move up':
 			return A2(
 				$author$project$Main$gameResponse,
-				game,
+				_Utils_update(
+					game,
+					{numberFlashes: game.numberFlashes - 1}),
 				_Utils_Tuple2(game.point.a, game.point.b - 2));
 		case 'move left':
 			return A2(
 				$author$project$Main$gameResponse,
-				game,
+				_Utils_update(
+					game,
+					{numberFlashes: game.numberFlashes - 1}),
 				_Utils_Tuple2(game.point.a - 2, game.point.b));
 		case 'move down':
 			return A2(
 				$author$project$Main$gameResponse,
-				game,
+				_Utils_update(
+					game,
+					{numberFlashes: game.numberFlashes - 1}),
 				_Utils_Tuple2(game.point.a, game.point.b + 2));
 		case 'move right':
 			return A2(
 				$author$project$Main$gameResponse,
-				game,
+				_Utils_update(
+					game,
+					{numberFlashes: game.numberFlashes - 1}),
 				_Utils_Tuple2(game.point.a + 2, game.point.b));
 		default:
 			return game;
@@ -7621,10 +7629,7 @@ var $author$project$Main$gameAction = F3(
 			A2(
 				$elm$core$Maybe$withDefault,
 				'',
-				A2($elm$core$Dict$get, 'flash', settings.keyBinds))) ? ((game.numberFlashes > 0) ? $author$project$Main$flash(
-			_Utils_update(
-				game,
-				{numberFlashes: game.numberFlashes - 1})) : game) : game))));
+				A2($elm$core$Dict$get, 'flash', settings.keyBinds))) ? ((game.numberFlashes > 0) ? $author$project$Main$flash(game) : game) : game))));
 	});
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);

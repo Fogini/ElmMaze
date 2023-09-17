@@ -435,7 +435,7 @@ gameAction game settings value =
 
     else if value == withDefault "" (Dict.get "flash" settings.keyBinds) then
         if game.numberFlashes > 0 then
-            flash { game | numberFlashes = game.numberFlashes - 1 }
+            flash game
 
         else
             game
@@ -448,16 +448,16 @@ flash : Game -> Game
 flash game =
     case game.lastAction of
         "move up" ->
-            gameResponse game ( first game.point, second game.point - 2 )
+            gameResponse { game | numberFlashes = game.numberFlashes - 1 } ( first game.point, second game.point - 2 )
 
         "move left" ->
-            gameResponse game ( first game.point - 2, second game.point )
+            gameResponse { game | numberFlashes = game.numberFlashes - 1 } ( first game.point - 2, second game.point )
 
         "move down" ->
-            gameResponse game ( first game.point, second game.point + 2 )
+            gameResponse { game | numberFlashes = game.numberFlashes - 1 } ( first game.point, second game.point + 2 )
 
         "move right" ->
-            gameResponse game ( first game.point + 2, second game.point )
+            gameResponse { game | numberFlashes = game.numberFlashes - 1 } ( first game.point + 2, second game.point )
 
         _ ->
             game
